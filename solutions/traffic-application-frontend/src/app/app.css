@@ -1,0 +1,11 @@
+html, body, #root {
+  height: 100%;
+}
+
+label.pf-c-switch {
+  padding-right: 1em;
+}
+
+span.pf-c-switch__label {
+  padding-left: 0.25em !important;
+}

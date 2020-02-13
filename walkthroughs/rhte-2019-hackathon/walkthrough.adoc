@@ -1,0 +1,598 @@
+:username: {user-sanitized-username}
+
+:kafka-broker-uri: integreatly-cluster-kafka-brokers.amq-streams.svc:9092
+:fuse-streams-connection-name: AMQ Streams Message Broker
+:fuse-database-connection-name: City Postgres
+:streams-junction-topic-name: junctions
+:streams-meter-topic-name: meter
+:streams-junction-data-integration: IoT Junction Data Ingestion
+:streams-meter-data-integration: IoT Parking Meter Data Ingestion
+
+:postgres-hostname: postgresql.city-of-losangeles.svc
+:postgres-port: 5432
+:postgres-database: city-info
+:postgres-connection-url: jdbc:postgresql://{postgres-hostname}:{postgres-port}/{postgres-database}
+:postgres-username: {username}
+:postgres-password: Password1
+:postgres-junction-lookup-table: junction_info
+:postgres-meter-lookup-table: meter_info
+:postgres-junction-status-table: junction_status_{username}
+:postgres-meter-status-table: meter_status_{username}
+
+:oas3-url: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md
+:oas3-data-types-url: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#dataTypes
+
+:3Scale-ProductName: 3scale API Management
+:3scale-base-name: {user-sanitized-username}-traffic-service
+:3scale-api-name: {3scale-base-name}-api
+:3scale-plan-name: {3scale-base-name}-plan
+:3scale-app-name: {3scale-base-name}-app
+:3scale-api-key: {3scale-base-name}-key
+
+= Red Hat Summit 2020 RHMI Lab
+
+Welcome to the Red Hat Summit 2020 Red Hat Managed Integration Lab!
+
+Red Hat Managed Integration (RHMI) delivers cloud-based agile integration services hosted on OpenShift Dedicated (OSD). Using RHMI we can create consistent, immediately available, managed environments so that development teams can more easily build enterprise applications on OpenShift.
+These environments accelerate engagement timelines, reduce operational risk and cost, and address the needs of the evolving enterprise integration market.
+
+In this lab you’re tasked with building out a real-time IoT traffic and parking meter management solution for the city of Los Angeles - don't worry we'll be helping you along the way!
+
+* Data ingestion of real time traffic and parking meter data from AMQ Streams into a Postgres Database using Red Hat Fuse Online
+* Definition of an OpenAPI compatible API Spec using Apicurio
+* Deployment of a ready-made API using your choice of Runtime technologies - Fuse or Node.js
+* Protection of the API using 3scale API Management
+* Visualisation of the data from the API via a front end web app based on React.js and Patternfly.js
+
+{blank}
+
+To get you started, you will be provided with the following infrastructure:
+
+* An AMQ Streams instance with 2 topics - {streams-junction-topic-name} and {streams-meter-topic-name}. These topics will be connected to a live stream of IoT data which needs to be ingested
+* A Postgres server with two databases:
+- A pre populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
+- An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
+* Access to the Apicurio API designer tool for creating the OpenAPI Spec compatible API definition
+* Implementations of the API Server in Fuse and Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
+* Access to 3scale API Management service for protecting your API
+* An implementation of the front end web app with a API calls implemented
+
+.Prerequisites
+
+* `oc` on your local machine
+* a GitHub account (link:https://github.com/join[github.com/join, window="_blank"])
+
+{blank}
+
+The architecture diagram below provides an overview of the complete solution.
+
+image::images/arch.png[integration, role="integr8ly-img-responsive"]
+
+
+[type=walkthroughResource,serviceName=openshift]
+.Red Hat OpenShift
+****
+* link:{openshift-host}/console[Console, window="_blank"]
+* link:https://help.openshift.com/[Openshift Online Help Center, window="_blank"]
+* link:https://blog.openshift.com/[Openshift Blog, window="_blank"]
+****
+
+[type=walkthroughResource,serviceName=fuse]
+.Fuse Online
+****
+* link:{fuse-url}[Console, window="_blank", id="resources-fuse-url"]
+* link:https://access.redhat.com/documentation/en-us/red_hat_fuse/7.4/html/integrating_applications_with_fuse_online/index[Documentation, window="_blank"]
+* link:https://www.redhat.com/en/technologies/jboss-middleware/fuse-online[Overview, window="_blank"]
+****
+
+[type=walkthroughResource,serviceName=apicurio]
+.Apicurito
+****
+* link:{apicurio-url}[Console, window="_blank", id="resources-apicurio-url"]
+****
+
+[type=walkthroughResource,serviceName=3scale]
+.3Scale
+****
+* link:https://{user-username}-admin.{openshift-app-host}[Console, window="_blank"]
+* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.6/[Documentation, window="_blank"]
+* link:https://www.redhat.com/en/technologies/jboss-middleware/3scale[Overview, window="_blank"]
+****
+
+[type=walkthroughResource,serviceName=codeready]
+.CodeReady Workspaces
+****
+* link:{che-url}[Console, window="_blank"]
+* link:https://developers.redhat.com/products/codeready-workspaces/overview/[Overview, window="_blank"]
+* link:https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/1.2/[Documentation, window="_blank"]
+****
+
+:sectnums:
+
+[time=20]
+== Data Ingestion from AMQ Streams to Postgres using Fuse Online
+
+Fuse Online is an enterprise integration platform that provides connectors for many services, such as AMQ Streams and Postgres.
+In this section we will create two connections - one to AMQ Streams and one to Postgres.
+We will then create an integration that uses these two connections and translates the incoming data from AMQ streams into database *INSERT* statements on Postgres.
+
+=== Creating the AMQ Streams Connector
+
+. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+
+. Select *Connections* from the left hand menu.
+
+. Select the *Create Connection* button to start the *Create Connection* wizard.
+
+. When prompted with *Select Connector*, select *Kafka Message Broker*.
+
+. When prompted with *Configure connection*:
+.. Enter the following in the *Kafka Broker URIs* field:
++
+[subs="attributes+"]
+----
+{kafka-broker-uri}
+----
+.. Click the *Validate* button to ensure the connection to AMQ Streams is configured correctly.
+.. You should see the message `Kafka Message Broker has been successfully validated`.
+.. Click Next to move onto the *Name connection* step
+
+. When prompted with *Name connection*:
+.. Enter the following in the *Name* field:
++
+[subs="attributes+"]
+----
+{fuse-streams-connection-name}
+----
+. Click *Save*.
+
+
+[type=verification]
+Is a connection named *{fuse-streams-connection-name}* displayed on the *Connections* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-4"] console?
+
+[type=verificationFail]
+Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+
+
+=== Creating the Postgres Connector
+
+To allow Fuse Online to write data consumed from AMQ Streams to Postgres, we need to create a new Database connection in Red Hat Fuse Online.
+
+. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+
+. Select *Connections* from the left hand menu.
+
+. Select the *Create Connection* button to start the *Create Connection* wizard.
+
+. Select *Database* to configure a *Postgres* connection.
+
+. Enter the connection URL:
++
+[subs="attributes+"]
+----
+{postgres-connection-url}
+----
+
+. Enter the Username:
++
+[subs="attributes+"]
+----
+{postgres-username}
+----
+
+. Enter the password:
++
+[subs="attributes+"]
+----
+{postgres-password}
+----
+
+. Leave the Schema field blank for now.
+
+. Select the *Validate* button to check that the values are valid.
+
+. Click *Next* and enter a name for the connection, for example:
++
+[subs="attributes+"]
+----
+{fuse-database-connection-name}
+----
+
+. Click *Save*.
+
+
+[type=verification]
+Is the new Postgres connection displayed on the *Connections* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-6"] console?
+
+[type=verificationFail]
+Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+
+
+=== Creating the integration between AMQ Streams and Postgres for traffic data
+
+. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+
+. Select *Integrations* from the left hand menu.
+
+. Select the *Create Integration* button to start the *Create Integration* wizard.
+
+. Choose *{fuse-streams-connection-name}* as the connection that starts the integration.
+
+. When prompted to *Choose an Action*, select *Subscribe*.
+
+. When prompted to select a *Topic Name*, select *{streams-junction-topic-name}*:
+
+. When prompted to *Specify Output Data Type*:
+.. Select *JSON Schema* as the type.
+.. Enter the following in the *Definition* field:
++
+[subs="attributes+"]
+----
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"properties": {
+		"junctionId" : { "type": "number" },
+		"timestamp" : { "type": "number" },
+		"counts" : {
+			"type" : "object",
+			"properties" : {
+				"ns": { "type": "number" },
+				"ew": { "type": "number" }
+			}
+		}
+	}
+}
+----
+.. Enter *junction_data* in the *Data Type Name* field.
+.. Click *Next*.
+
+. Choose *{fuse-database-connection-name}* as the *Finish Connection*.
+
+. When prompted to *Choose an Action*, select *Invoke SQL*.
+
+. When prompted with *Configure the action*, enter the following:
+.. Enter the following in the *SQL statements* field:
++
+[subs="attributes+"]
+----
+INSERT INTO {postgres-junction-status-table} (junction_id, timestamp, count_ns, count_ew)
+VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
+----
+.. Leave *Batch update* set to *No*
+.. Click *Next*
+
+. When prompted to *Add to Integration*, click on the blue *+* icon between the *Subscribe* step and the *Invoke SQL* step.
+
+. Select *Data Mapper* to map the source fields in the AMQ Streams JSON schema to the placeholder parameters in the SQL Statement:
+.. Click and drag *junctionid* from the Source coulmn to *junction_id* in the *Target* column.
+.. Click and drag *timestamp* from the Source coulmn to *timestamp* in the *Target* column.
+.. Expand the *counts* object to expose the two child objects - *ew* and *ns*.
+.. Click and drag *ew* from the Source coulmn to *count_ew* in the *Target* column.
+.. Click and drag *ns* from the Source coulmn to *count_ns* in the *Target* column.
+.. Click *Done* to navigate back to the *Integration* screen.
+
+. Click *Publish*.
+. When prompted, enter a name, for example:
++
+[subs="attributes+"]
+----
+{streams-junction-data-integration}
+----
+. Click *Save and publish*.
+
+. Monitor the *Integration Summary* dashboard until a green check mark is displayed beside the new integration.
+The integration may take a number of minutes to complete building.
+
+[type=verification]
+Is the integration displayed as *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+
+[type=verificationFail]
+
+****
+. Wait for the integration to appear. This can take several minutes.
+
+. Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+****
+
+
+=== Creating the integration between AMQ Streams and Postgres for parking meter data
+
+. Repeat the steps above for the *{streams-junction-data-integration}* integration, with the following changes:
+
+.. When prompted for a *Topic Name*, enter:
++
+[subs="attributes+"]
+----
+{streams-meter-topic-name}
+----
+.. Enter the following in the JSON Schema *Definition* field:
++
+[subs="attributes+"]
+----
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"properties": {
+		"meterId" : { "type": "number" },
+		"timestamp" : { "type": "number" },
+		"status" : { "type": "string" }
+	}
+}
+----
+.. When configuring the SQL Statement, enter the following:
++
+[subs="attributes+"]
+----
+INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
+ VALUES (:#meter_id, :#status_text, to_timestamp(:#timestamp));
+----
+.. When adding the *Data Mapper* map the 3 fields as follows:
+... meterId => meter_id
+... timestamp => timestamp
+... status => status_text
+
+[type=verification]
+Is the integration displayed as *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+
+[type=verificationFail]
+
+****
+. Wait for the integration to appear. This can take several minutes.
+
+. Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+****
+
+
+
+[type=taskResource]
+.Task Resources
+****
+* https://access.redhat.com/documentation/en-us/red_hat_fuse/{fuse-version}/html-single/integrating_applications_with_fuse_online/creating-integrations_ug#creating-integrations_ug[Creating integrations, window="_blank"]
+****
+
+
+
+
+[time=20]
+== API Definition using Apicurio
+
+Apicurito is the Red Hat API Designer tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
+The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
+
+When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
+An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
+For more information on the *OpenAPI Specification* see the link:{oas3-url}[Open API Specification, window="_blank"] on GitHub
+
+In this section we will use the Red Hat API designer to create an OpenAPI Specification which will then be used to bootstrap the development of our API Server.
+The APIs created should combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being injested from AMQ Streams.
+
+=== API Data Types
+You will need to create at least two main API Data Types - *Junction* and *Meter*.
+These Data Types form the basis for the APIs which will be created to act upon the data types.
+For more information on *Data Types* see the link:{oas3-data-types-url}[Open API Spec Data Types Documentation]
+
+. Log in to the link:{apicurio-url}[Red Hat API Designer, window="_blank"] console.
+. Click the *New API* Button
+. Click the *Add a data type* link on the left of the screen under the *Data Types* heading
+. Enter the value of `Meter` in the *Name* field
+. Enter the following vale for *JSON Example*
++
+----
+{
+  "meter_id": 1,
+  "last_updated": "2019-10-15T20:12:32Z",
+  "address": "1301 N LA BREA AVE",
+  "latitude": 34.095452,
+  "longitude": -118.344219,
+  "status": "available"
+}
+----
+. Click the *REST Resource* box to create default REST resources for the Meter data type
+. Click *Save*
+
+{blank}
+
+Repeat the above steps to add a Data Type for *Junction*, providing the following value for the *JSON Example* field.
+
+----
+{
+  "id": 1,
+  "junction_name": "CANOGA AV AT VANOWEN ST",
+  "latitude": 34.18834537329447,
+  "longitude": -118.59747110546994,
+  "east_west_count" : 10,
+  "north_south_count" : 8
+}
+----
+
+=== API Paths
+Default API Paths have automatically been created when creating the *Meter* and *Junction* data types, by clicking the *REST Resource* box during the data type creation.
+This will provide default implementations for *GET* and *POST* paths, both for listing all *Meter* and *Junction* data types as well as getting specific *Meter* and *Junction* data types by id.
+The API should only support read operations, which means that the *POST*, *PUT* and *DELETE* methods should be removed.
+
+The *GET* endpoint for the *Meter* data type should be extended to support an optional query paramter called *status* which can be used to return a filtered list of *Meter* objects that match the specific status.
+The supported values for status that will need to be catered for during API implementation are "available", "occupied", "unknown", or "out-of-service".
+
+. Select the */meters* path.
+. Click on the *GET* operation.
+. Click the *+* symbol to the right of *QUERY PARAMETERS*
+. Enter the following value for *Name*: `status`
+. Enter the following value for *Description*: `Filter list of returned meters by status. Supported values for status are are "available", "occupied", "unknown", or "out-of-service".`
+. Under Type Information, leave the parameter as *Not Required* and select `String` from the *type* dropdown
+. Click Save.
+
+=== Download the completed OpenAPI Specification
+
+Once you have fully defined the API specification, click *Generate* => *Fuse Camel Project*
+You should also download the specification in either JSON or YAML format for use in the next section, if you wish to implement the API in a technology other than *Fuse Camel*.
+
+[time=15]
+== Deployment of a Fuse or Node.js API Implementation
+
+=== Connecting to Postgres
+
+When deploying your chosen API server implementation, you will need to use the following details to connect your API Server to your Postgres DB:
+
+. Username: `{postgres-username}`
+. Password: `{postgres-password}`
+. Hostname: `{postgres-hostname}`
+. Database: `{postgres-database}`
+. Port: `{postgres-port}`
+
+{blank}
+
+This information will be provided to your API server via a *ConfigMap*, backed by a *Secret* in OpenShift.
+
+=== Fuse + Spring Boot
+
+TODO - Instructions for deployment of *solutions/traffic-application-backend-camel*
+
+=== Node.js
+
+TODO - Instructions for deployment of *solutions/traffic-application-backend-nodejs*
+
+[time=25]
+== API Protection using 3scale API Management
+
+In 3scale, we will be dealing with the following constructs:
+. An *API* defines the back end service you wish to protect
+. An *Applications* define the credentials (e.g. API Key) to access your API. Applications are stored within *Developer Accounts*.
+. An *Application Plan* determines the access policies and is always associated with one Application.
+
+In order to secure the traffic and parking meter service that was built in the previous section, we will be performing the following activities in 3scale:
+. Creating a new API
+. Creating an Application Plan
+. Creating an Application
+. Configuring the API
+
+{blank}
+
+
+=== API Management Login
+
+. Open the link:{api-management-url}[3scale Login screen, window="_blank"].
+. Click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard.
+. Dismiss the *How does 3Scale work?* option which is displayed the first time you log in to {3Scale-ProductName}. The main Dashboard is displayed.
+
+{blank}
+
+[type=verification]
+Can you see the {3Scale-ProductName} Dashboard and navigate the main menu?
+
+[type=verificationFail]
+Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+
+=== Creating a new API
+
+. From the *Dashboard*, select the *New API* item.
+. Select the *Define Manually* option.
+. Enter the following as the *Name* and *System name*:
++
+[subs="attributes+"]
+----
+{3scale-api-name}
+----
+. Leave the *Description* field empty.
+. Click *Add API* at the bottom of the screen.
+
+{blank}
+
+=== Creating an Application Plan
+. Click *Applications > Application Plans* from the side navigation.
+. Click *Create Application Plan*.
+. Enter the following for *Name* and *System name*:
++
+[subs="attributes+"]
+----
+{3scale-plan-name}
+----
+. Leave the other fields with their default values.
+. Select *Create Application Plan*. You will be redirected to the *Application Plans* screen.
+. Select the *Publish* button, beside your plan list item, to publish the Plan.
+
+{blank}
+
+=== Creating an Application
+. Select *Audience* from the top navigation bar dropdown.
+. Select the *Developer* Account to open the *Account Summary* page.
+. Select the *(num) Application* item from the breadcrumb at the top of the screen to view Applications.
+. Click the *Create Application* button in the top right.
+. Select the *{3scale-plan-name}* Plan within the *{3scale-api-name}* section in the *Application plan* dropdown.
+. Enter the following for *Name* and *Description*:
++
+[subs="attributes+"]
+----
+{3scale-app-name}
+----
+. Click *Create Application*.
+. Set a custom *User Key* for the application:
+.. On the *{3scale-app-name}* application screen you were redirected to, scroll to the *API Credentials* section.
+.. Click the green pencil icon beside the *API User Key*
+.. In the *Set Custom User Key* modal dialog, enter:
++
+[subs="attributes+"]
+----
+{3scale-api-key}
+----
+.. Click *Set Custom Key*.
+
+{blank}
+
+=== Configuring the API
+
+. Click *Integration > Configuration* from the side navigation.
+. Click the *add the base URL of your API and save the configuration.* button.
+. In the *Private Base URL* field, enter the route name that was created for your application in the *API Implementation* section (i.e. when you were coding your Application):
+. Leave the *Staging Public Base URL* with it's default value.
+. Click *Update & test in Staging Environment* to save your work.
+
+{blank}
+
+[type=verification]
+Do you get a green line down the left had side of the main body of the window - between *API => API Gateway => Client*?
+Do you also see a message at the bottom of the screen as follows: *onnection between client, gateway & API is working correctly as reflected in the analytics section.*
+
+[type=verificationFail]
+Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+
+[time=15]
+== Front end visualisation using React and Patternfly 4
+
+In this section you will deploy a UI we've prepared using Patternfly's React components to create a web application to display the latest parking meter and junction traffic information.
+PatternFly is an open source design system created to enable consistency and usability across a wide range of applications and use cases.
+
+The Parking Meters page will:
+
+. Display a Google Map
+. Render a map marker for each meter
+. Cluster the meters when the map is zoomed out
+. Support filters for each meter state, e.g show only "available" parking meters
+
+{empty} +
+
+The Traffic Junctions page will:
+
+. Display a Google Map
+. Use Heatmap functionality from Google Maps to render traffic conditions
+
+{empty} +
+
+The end result will look similar to the images below. Here's an example of the
+Parking Meters being displayed:
+
+{empty} +
+
+image::images/ui-parking-meters.png[role="integr8ly-img-responsive"]
+
+{empty} +
+
+And here's the traffic heatmap built using the junction data
+
+{empty} +
+
+image::images/ui-traffic-heatmap.png[role="integr8ly-img-responsive"]
+
+=== Deploying the ui
+
+TODO - Instructions for deployment of *solutions/traffic-application-frontend*

@@ -1,0 +1,12 @@
+node_modules
+package-lock.json
+.DS_Store
+
+# These are generated - safe to ignore
+*.js
+*.js.map
+*.d.ts
+
+# Nodeshift and other temp files
+tmp
+openshift.local.clusterup

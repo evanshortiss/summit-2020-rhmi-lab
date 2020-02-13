@@ -1,0 +1,7 @@
+**/node_modules
+dist
+yarn-error.log
+stats.json
+coverage
+.env
+.DS_Store
