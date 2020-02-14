@@ -39,7 +39,10 @@ class ParkingMap extends React.Component<ParkingMapProps, ParkingMapState> {
     if (this.cluster) this.cluster.clearMarkers()
     if (this.markers) this.markers.forEach(m => m.setMap(null))
 
-    const response = await fetch('http://localhost:9000/meters/')
+    const uri = new URL('/meters', process.env.API_URL)
+    uri.searchParams.set('user_key', process.env.API_KEY || '')
+
+    const response = await fetch(uri.toString())
     const meters = await response.json() as MeterObject[]
 
     this.markers = meters

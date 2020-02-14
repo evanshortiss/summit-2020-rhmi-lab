@@ -16,7 +16,10 @@ const TrafficMap: React.FunctionComponent<any> = (props) => {
       console.log(`Map is now zoomed to: ${map.getZoom()}`)
     })
 
-    const response = await fetch('http://localhost:9000/junctions/')
+    const uri = new URL('/junctions', process.env.API_URL)
+    uri.searchParams.set('user_key', process.env.API_KEY || '')
+
+    const response = await fetch(uri.toString())
     const junctions = await response.json() as JunctionObject[]
 
     const heatmap = new google.maps.visualization.HeatmapLayer({

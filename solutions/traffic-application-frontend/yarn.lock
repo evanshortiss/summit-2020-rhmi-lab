@@ -3398,10 +3398,10 @@ entities@^1.1.1, entities@~1.1.1:
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
   integrity sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==
 
-env-var@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/env-var/-/env-var-5.1.0.tgz#1c10c6026008de9c6553c8cfc19fbe82d51f65ed"
-  integrity sha512-X0qlMaP0ltgl4GzZBjbihb6MVUYUNDipQoF044ycHknbekr9LI/F0fahIRaC1WLgyw0ZTEu+G1/UxBsAvMaN+A==
+env-var@6:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/env-var/-/env-var-6.0.1.tgz#eacaf23337d5256e7d6c391b3e4c48be3867a267"
+  integrity sha512-SBXkTaYQ/3I8UFhHIrnLatxsPfQ3+ex7MbPzrIWQNeBmN9Qcuy3GIRvFJn2UihO0kJ/OqBNNtrHS0KbC+oqKtQ==
 
 enzyme-adapter-react-16@^1.7.0:
   version "1.14.0"

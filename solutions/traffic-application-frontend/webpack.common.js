@@ -1,10 +1,12 @@
 const path = require('path');
 const webpack = require('webpack')
+const env = require('env-var')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
+const IS_PRODUCTION_BUILD = env.get('NODE_ENV').asString() === 'production'
 
 module.exports = {
   entry: {
@@ -14,7 +16,18 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       // Inject Google Maps API that's provided at build time
       // using an environment variable in the build settings
-      MAPS_API_KEY: process.env.MAPS_API_KEY
+      MAPS_API_KEY: process.env.MAPS_API_KEY,
+      // Inject the traffic and meters API URL
+      API_URL: env.get('API_URL')
+        .required(IS_PRODUCTION_BUILD)
+        .example('https://traffic-api-evalsNN.apps.your-cluster.open.redhat.com')
+        .asUrlString() || 'http://localhost:9000',
+
+      // Inject the API Key for the API
+      API_KEY: env.get('API_KEY')
+        .required(IS_PRODUCTION_BUILD)
+        .example('c0f6d493a1b5ba4b6fd6e6c09e90733e')
+        .asString() || ''
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src', 'index.html')

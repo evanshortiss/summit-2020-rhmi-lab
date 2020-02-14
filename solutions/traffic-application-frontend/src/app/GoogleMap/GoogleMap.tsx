@@ -1,6 +1,6 @@
 import * as React from 'react';
 import GoogleMapReact from 'google-map-react';
-console.log('using key', process.env)
+
 const mapSettings = {
   apiKey: process.env.MAPS_API_KEY,
   center: {

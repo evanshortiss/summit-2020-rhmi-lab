@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "prebuild": "yarn clean",
-    "build": "webpack --config webpack.prod.js",
+    "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "start": "node server.js",
     "start:dev": "webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
     "test": "jest",
@@ -74,7 +74,7 @@
     "@patternfly/react-styles": "^3.5.7",
     "@types/googlemaps": "^3.37.5",
     "copy-webpack-plugin": "^5.0.4",
-    "env-var": "^5.1.0",
+    "env-var": "6",
     "express": "^4.17.1",
     "google-map-react": "^1.1.4",
     "morgan": "^1.9.1",
