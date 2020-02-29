@@ -1,0 +1,4 @@
+---
+- import_playbook: ./requirements.yml
+- import_playbook: ./create-users.yml
+- import_playbook: ./project-setup.yml

@@ -3,8 +3,8 @@
 This repository contains a Solution Pattern that's compatible with the
 [Integreatly Solution Explorer](https://github.com/integr8ly/tutorial-web-app).
 
-## Lab Setup
-Refer to [content/README](content/README.md)
+## Lab Deployment
+Refer to [content/README](ansible/README.md) for instructions.
 
 ## Requirements for Development
 
@@ -22,7 +22,7 @@ nvm use 10
 npm install -g yarn@1
 ```
 
-## Development Setup for Walkthrough Content
+## Development Setup for Lab/Walkthrough Content
 
 Setup requires installation of Node.js 10.15 or later. This enables a Git hook
 that verifies the asciidoc content and walkthrough config.

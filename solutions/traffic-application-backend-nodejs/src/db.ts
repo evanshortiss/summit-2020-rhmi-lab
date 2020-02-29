@@ -10,7 +10,7 @@ const PG_DATABASE = env
 
 const PG_HOSTNAME = env
   .get('PG_HOSTNAME')
-  .default('postgresql.city-of-losangeles.svc')
+  .default('postgresql.city-of-losangeles.svc.cluster.local')
   .asString();
 
 const PG_USERNAME = env

@@ -1,0 +1,38 @@
+---
+
+- name: "Create lab admin test user"
+  shell: htpasswd -B -b -c /tmp/rhmi-lab-htpasswd {{admin_eval_username}} {{admin_eval_password}}
+
+- name: Create evals lab users
+  shell: htpasswd -B -b /tmp/rhmi-lab-htpasswd {{ lab_users_name_format|format(item|int) }} {{ lab_users_name_format|format(item|int) }}-password
+  with_sequence: count={{ lab_user_count }}
+
+- name: Create htpasswd secret
+  shell: oc create secret generic rhmi-lab-htpass-secret --from-file=htpasswd=/tmp/rhmi-lab-htpasswd -n openshift-config
+
+- name: Backup oauth/cluster from openshift-config namespace to tmp/cluster-oauth.backup.json
+  shell: oc get oauth/cluster -n openshift-config -o json > /tmp/cluster-oauth.backup.json
+
+- name: Patch cluster OAuth with htpasswd
+  shell: oc patch oauth/cluster --type json -n openshift-config -p '[{"op":"add","path":"/spec/identityProviders/-","value":{"mappingMethod":"claim","name":"rhmi-lab-htpasswd","type":"HTPasswd","htpasswd":{"fileData":{"name":"rhmi-lab-htpass-secret"}}}}]'
+
+- name: Give cluster OAuth 30 seconds to adapt to changes
+  shell: sleep 30
+
+- name: Attempt login as lab admin until OAuth is accepting new htpasswd users
+  shell: oc login -u {{admin_eval_username}} -p {{admin_eval_password}}
+  register: admin_login_result
+  retries: 20
+  until: admin_login_result.rc == 0
+  delay: 5
+
+- name: Intialise evals user accounts
+  shell: oc login -u {{ lab_users_name_format|format(item|int) }} -p {{ lab_users_name_format|format(item|int) }}-password
+  with_sequence: count={{ lab_user_count }}
+  register: evals_login_result
+  retries: 20
+  until: evals_login_result.rc == 0
+  delay: 5
+
+- name: Restore kube:admin login session
+  shell: oc login --token={{oc_login_token}}

@@ -8,7 +8,7 @@
 :streams-junction-data-integration: IoT Junction Data Ingestion
 :streams-meter-data-integration: IoT Parking Meter Data Ingestion
 
-:postgres-hostname: postgresql.city-of-losangeles.svc
+:postgres-hostname: postgresql.city-of-losangeles.svc.cluster.local
 :postgres-port: 5432
 :postgres-database: city-info
 :postgres-connection-url: jdbc:postgresql://{postgres-hostname}:{postgres-port}/{postgres-database}

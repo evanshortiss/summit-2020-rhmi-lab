@@ -7,7 +7,7 @@ const env = require('env-var')
 module.exports = async function getPgTransport () {
   const connectionString = env.get(
     'PG_CONNECTION_STRING',
-    'postgresql://rhte-admin:changethistosomethingelse@postgresql.city-of-losangeles.svc:5432/city-info'
+    'postgresql://rh-summit-admin:changethistosomethingelse@postgresql.city-of-losangeles.svc.cluster.local:5432/city-info'
   ).asUrlString()
 
   log('connecting to psql using: %s', connectionString)

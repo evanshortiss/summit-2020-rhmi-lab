@@ -1,0 +1,6 @@
+---
+lab_user_count: 75
+lab_users_name_format: evals%02d
+admin_eval_username: lab-admin-evals
+admin_eval_password: labadminpassword
+project_name: city-of-losangeles

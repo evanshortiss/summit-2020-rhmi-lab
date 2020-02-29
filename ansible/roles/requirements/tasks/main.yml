@@ -1,0 +1,4 @@
+---
+
+- name: "Verify requirements are installed"
+  include_tasks: requirements.yml

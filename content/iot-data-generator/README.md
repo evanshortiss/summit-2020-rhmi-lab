@@ -48,7 +48,7 @@ Configure this by setting a `TRANSPORT_MODE` environment variable.
 * `TRANSPORT_MODE` - Set to `kafka`, `psql`, `amqp` or `console`. Defaults to
 `console`.
 * `PG_CONNECTION_STRING` - If `TRANSPORT_MODE` is set to `psql` this will be
-used to connect to PostgreSQL. Defaults to `postgresql://rhte-admin:changethistosomethingelse@postgresql.city-of-losangeles.svc:5432/city-info`
+used to connect to PostgreSQL. Defaults to `postgresql://rh-summit-admin:changethistosomethingelse@postgresql.city-of-losangeles.svc.cluster.local:5432/city-info`
 
 ## Run Locally with Node.js
 

@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  tasks:
+    - include_role:
+        name: requirements
+    - include_role:
+        name: uninstall

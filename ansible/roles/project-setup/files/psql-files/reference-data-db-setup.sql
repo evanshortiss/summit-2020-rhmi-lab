@@ -1,6 +1,6 @@
 \c city-info;
 
-ALTER USER "rhte-admin" WITH SUPERUSER;
+ALTER USER "rh-summit-admin" WITH SUPERUSER;
 
 CREATE TABLE junction_info (
    id serial NOT NULL PRIMARY KEY,

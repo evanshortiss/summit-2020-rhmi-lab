@@ -1,0 +1,41 @@
+---
+- name: Verify oc_login_token is set
+  fail:
+    msg: oc_login_token variable was not set
+  when: oc_login_token is not defined
+
+- name: Verify oc_login_server is set
+  fail:
+    msg: oc_login_server variable was not set
+  when: oc_login_server is not defined
+
+- name: Login using oc_login_token
+  shell: oc login --token={{oc_login_token}} --server={{oc_login_server}}
+
+- name: Get identity via oc whoami
+  shell: oc whoami
+  register: oc_identity
+
+- name: Verify identity is kube:admin
+  fail:
+    msg: "oc_login_token should be a token for kube:admin"
+  when: oc_identity.stdout!="kube:admin"
+
+- name: Verify jq CLI install location
+  shell: which jq
+  register: jq_location
+
+- name: JQ CLI location
+  debug: var=jq_location
+
+- name: Get the target oc version to major version
+  shell: oc version -o json | jq '.clientVersion.gitVersion' | cut -d- -f3 | cut -d. -f1
+  register: oc_major_version
+
+- name: OC CLI version
+  debug: var=oc_major_version
+
+- name: Verify target oc version is v4.x
+  fail:
+    msg: "Unsupported oc version"
+  when: oc_major_version.stdout!="4"

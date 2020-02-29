@@ -1,0 +1,48 @@
+---
+- name: Create backing project
+  shell: oc new-project {{project_name}}
+
+- name: Create AMQ Streams junction topic
+  shell: oc apply -f {{role_path}}/files/topic-junctions.yml -n {{project_name}}
+
+- name: Create AMQ Streams junction topic
+  shell: oc apply -f {{role_path}}/files/topic-meters.yml -n {{project_name}}
+
+- name: Create PSQL deployment
+  shell: oc new-app postgresql-persistent --param=POSTGRESQL_DATABASE=city-info --param=VOLUME_CAPACITY=10Gi --param=POSTGRESQL_VERSION=9.6 --param=POSTGRESQL_USER=rh-summit-admin --param=POSTGRESQL_PASSWORD=changethistosomethingelse -n {{project_name}}
+
+- name: Verify PSQL pods are running
+  shell: oc get pods -l name=postgresql -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' -n {{project_name}}
+  register: result
+  until: result.stdout == "true"
+  retries: 25
+  delay: 5
+  changed_when: False
+
+- name: Get PSQL Pod ID
+  shell: oc get pods -l name=postgresql -o jsonpath='{.items[0].metadata.name}' -n {{project_name}}
+  register: psql_pod_id
+
+- name : Create files dir for data in PSQL Pod
+  shell: oc exec {{psql_pod_id.stdout}} -- bash -c 'mkdir /var/lib/pgsql/data/setup-files' -n {{project_name}}
+
+- name: rsync files to PSQL Pod
+  shell: oc rsync {{role_path}}/files/psql-files/ {{psql_pod_id.stdout}}:/var/lib/pgsql/data/setup-files -n {{project_name}}
+
+- name: Run PSQL setup script in Pod
+  shell: oc exec {{psql_pod_id.stdout}} -- bash -c 'psql -U postgres -f /var/lib/pgsql/data/setup-files/reference-data-db-setup.sql' -n {{project_name}}
+
+- name: Create PSQL evals users
+  shell: oc exec {{psql_pod_id.stdout}} -- bash -c 'sh /var/lib/pgsql/data/setup-files/create-users-and-dbs.sh' -n {{project_name}}
+
+- name: Update POSTGRESQL_MAX_CONNECTIONS count
+  shell: oc set env dc/postgresql POSTGRESQL_MAX_CONNECTIONS=500 -n {{project_name}}
+
+- name: Provide evals lab users with view access to project Pods
+  shell: oc create -f {{role_path}}/files/port-forward-role.yml -n {{project_name}}
+
+- name: Intialise evals user accounts
+  shell: oc adm policy add-cluster-role-to-user allow-port-forward {{ lab_users_name_format|format(item|int) }} -n {{project_name}}
+  retries: 25
+  delay: 10
+  with_sequence: count={{ lab_user_count }}
