@@ -1,10 +1,14 @@
-# RHTE 2019 Hackathon - RHMI (Integreatly)
+# Red Hat Summit 2020 Lab on RHMI (Integreatly)
 
 This repository contains a Solution Pattern that's compatible with the
-[Integreatly Solution Explorer](https://github.com/integr8ly/tutorial-web-app).
+[Solution Explorer](https://github.com/integr8ly/tutorial-web-app) to
+facilitate the lab.
+
+It also contains a Ansible Playbooks to deploy the lab infrastructure on a
+pre-existing RHMI (Integreatly) v2 Cluster.
 
 ## Lab Deployment
-Refer to [content/README](ansible/README.md) for instructions.
+Refer to [ansible/README](ansible/README.md) for instructions.
 
 ## Requirements for Development
 
