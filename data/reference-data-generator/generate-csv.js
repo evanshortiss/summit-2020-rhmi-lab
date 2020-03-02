@@ -7,10 +7,10 @@ const { resolve } = require('path')
 const { argv } = require('yargs')
 
 const junctionJsonDataset = require(
-  resolve(__dirname, '../../data/losangeles-api-data/junction-sample.raw.json')
+  resolve(__dirname, '../losangeles-api-data/junction-sample.raw.json')
 )
 const metersJsonDataset = require(
-  resolve(__dirname, '../../data/losangeles-api-data/meter-sample.raw.json')
+  resolve(__dirname, '../losangeles-api-data/meter-sample.raw.json')
 )
 
 // Remove every other junction to reduce dataset size, then
@@ -40,10 +40,10 @@ const meters = metersJsonDataset.features
   })
 
 writeFileSync(
-  resolve(__dirname, 'sync-files/junction_info.json'),
+  resolve(__dirname, 'junction_info.json'),
   JSON.stringify(junctions.slice(0, argv.limit))
 )
 writeFileSync(
-  resolve(__dirname, 'sync-files/meter_info.json'),
+  resolve(__dirname, 'meter_info.json'),
   JSON.stringify(meters.slice(0, argv.limit))
 )

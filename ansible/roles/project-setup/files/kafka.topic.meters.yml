@@ -3,7 +3,7 @@ kind: KafkaTopic
 metadata:
   name: meters
   labels:
-    strimzi.io/cluster: integreatly-cluster
+    strimzi.io/cluster: iot-cluster
 spec:
   partitions: 10
   replicas: 2

@@ -23,10 +23,14 @@ ansible-playbook playbooks/install.yml \
 # The token and server URL can be obtained by logging in to the 
 # OpenShift Console and choosing "Copy Login Command" from the
 # menu in the top right corner
--e oc_login_token=Dfup9YoONYOx4wr6kRmP7Tc8vjSATf42_Hp3-SRXNYI \
--e oc_login_server=https://api.summit.cloudservices.rhmw.io:6443 \
+-e oc_login_token=<CLUSTER_API_TOKEN> \
+-e oc_login_server=<CLUSTER_API_URL> \
 -e lab_user_count=75
 ```
+
+Once this has completed you can login as `evals01` thru `evals75` using the
+password `$USERNAME-password` where `$USERNAME` is `evals01` or similar, e.g
+`evals01-password`.
 
 ## Uninstall Instructions
 
@@ -34,7 +38,39 @@ Same as deployment, but use the `uninstall.yml` playbook.
 
 ```bash
 ansible-playbook playbooks/uninstall.yml \
--e oc_login_token=Dfup9YoONYOx4wr6kRmP7Tc8vjSATf42_Hp3-SRXNYI \
--e oc_login_server=https://api.summit.cloudservices.rhmw.io:6443 \
+-e oc_login_token=<CLUSTER_API_TOKEN> \
+-e oc_login_server=<CLUSTER_API_URL> \
 -e lab_user_count=75
+```
+
+## Verify the Deployment
+
+Verify that the `city-of-losangeles` project exists.
+
+Next, connect to the database Pod on OpenShift in the `city-of-losangeles`
+project:
+
+```bash
+POSTGRES_POD=$(oc get pods -o json | jq -r '.items[0].metadata.name')
+oc rsh $POSTGRES_POD
+```
+
+Use the following to test the database from the rsh session:
+
+```bash
+# Connect to postgres as an evals user, password is "Password1"
+psql -U evals01 -d city-info -W
+```
+
+Query and try update the database. Update should return an error.
+
+```sql
+-- Should list results with id, name, lat, and long
+select * from junction_info;
+
+-- Should list results with id, address, lat, and long
+select * from meter_info;
+
+-- Should fail since evals users do not have write access to the city-info db
+UPDATE meter_info SET address='oops' WHERE id=0;
 ```

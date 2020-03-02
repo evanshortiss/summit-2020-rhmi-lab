@@ -5,7 +5,7 @@
   "description": "## Requirements",
   "main": "generate-csv.js",
   "scripts": {
-    "start": "./db-setuh.sh"
+    "start": "node generate-csv.js && json2csv -i meter_info.json -o meter_info.csv && json2csv -i junction_info.json -o junction_info.csv"
   },
   "keywords": [],
   "author": "Evan Shortiss",

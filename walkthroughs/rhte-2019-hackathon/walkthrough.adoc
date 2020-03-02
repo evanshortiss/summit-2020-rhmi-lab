@@ -1,6 +1,6 @@
 :username: {user-sanitized-username}
 
-:kafka-broker-uri: integreatly-cluster-kafka-brokers.amq-streams.svc:9092
+:kafka-broker-uri: iot-cluster-kafka-brokers.amq-streams.svc:9092
 :fuse-streams-connection-name: AMQ Streams Message Broker
 :fuse-database-connection-name: City Postgres
 :streams-junction-topic-name: junctions

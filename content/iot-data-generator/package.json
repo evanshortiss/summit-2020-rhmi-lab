@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node generate.js",
     "format": "standard --fix generate.js",
-    "nodeshift": "nodeshift --namespace.name city-of-losangeles"
+    "nodeshift": "nodeshift --namespace.name city-of-losangeles",
+    "image:build": "docker build . -t quay.io/evanshortiss/parking-and-junction-data-generator:latest",
+    "image:push": "docker push quay.io/evanshortiss/parking-and-junction-data-generator:latest"
   },
   "husky": {
     "hooks": {

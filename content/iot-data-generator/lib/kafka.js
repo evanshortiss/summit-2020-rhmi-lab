@@ -6,7 +6,7 @@ const log = require('barelog')
 
 module.exports = function getKafkaTransport () {
   return new Promise((resolve, reject) => {
-    const kafkaHost = env.get('KAFKA_HOST', 'integreatly-cluster-kafka-brokers.amq-streams.svc:9092').asString()
+    const kafkaHost = env.get('KAFKA_HOST', 'iot-cluster-kafka-brokers.city-of-losangeles.svc.cluster.local:9092').asString()
     const client = new kafka.KafkaClient({
       kafkaHost
     })

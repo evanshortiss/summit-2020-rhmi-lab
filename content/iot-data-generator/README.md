@@ -1,6 +1,9 @@
-# RHTE 2019 RHMI Hackathon IoT Data Generator
+# Red Hat Summit 2020 IoT Data Generator
 
-## About
+This Node.js application generates data for attendees of the lab to consume
+and operate on. 
+
+_NOTE: By default data is written to stdout. To write data to Kafka for the lab users to consume you must set `TRANSPORT_MODE=kafka` *Environment Variable* in the *DeploymentConfig*_
 
 ### Strategy
 
@@ -31,7 +34,7 @@ idea that some intersections are busier than others.
 
 Data can be written to the following:
 
-* Kafka Topics
+* AMQ Streams (Kafka) Topics
 * PostgreSQL Tables
 * AMQP (provided by AMQ Online)
 * stdout/console (default)
@@ -40,8 +43,9 @@ Configure this by setting a `TRANSPORT_MODE` environment variable.
 
 ## Requirements
 
-* Node.js 10+
-* Docker 18+
+* Node.js 12+
+* Docker 19+
+* OpenShift (`oc`) CLI 4.x
 
 ## Configuration
 
@@ -62,6 +66,15 @@ npm start
 The generator will begin to print data on the console by default.
 
 ## Deploy to OpenShift
+
+### Using an Image from Quay.io 
+If you want to deploy the generator using a pre-built image run the following:
+
+```
+oc new-app quay.io/evanshortiss/parking-and-junction-data-generator
+```
+
+## Deploy to OpenShift via Nodeshift
 Running the following will deploy the project into the `city-of-losangeles`
 namespace.
 
@@ -71,14 +84,11 @@ npm install
 npm run nodeshift
 ```
 
-## Docker Build & Run
+## Docker Build & Push
 
-The npm registry variables passed in the example are optional.
+To build and push a new image you can use the included scripts:
 
 ```
-export TAGNAME=rhte-2019-rhmi-iot-datagen
-
-docker build --build-arg NPM_REGISTRY_URL=$REG_URL --build-arg NPM_CAFILE_URL=$REG_CA_URL . -t dil-streaming-earth-dashboard
-
-docker run rhte-2019-rhmi-iot-datagen:latest 
+npm run image:build
+npm run image:push
 ```

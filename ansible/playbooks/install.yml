@@ -2,3 +2,15 @@
 - import_playbook: ./requirements.yml
 - import_playbook: ./create-users.yml
 - import_playbook: ./project-setup.yml
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - debug:
+        msg: Provisioning complete!
+    - debug:
+        msg: Remember, the IoT data generator does not automatically send data to AMQ Streams (Kafka)!
+    - debug:
+        msg: Set the environment variable TRANSPORT_MODE=kafka on the generator DC
+    - debug:
+        msg: You can also change the Kafka broker URL by setting the KAFKA_HOST environment variable
