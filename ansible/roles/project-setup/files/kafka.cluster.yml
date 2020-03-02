@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1beta1
 kind: Kafka
 metadata:
-  name: integreatly-cluster
+  name: iot-cluster
   namespace: city-of-losangeles
 spec:
   kafka:

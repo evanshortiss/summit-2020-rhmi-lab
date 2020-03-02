@@ -11,6 +11,6 @@
     - debug:
         msg: Remember, the IoT data generator does not automatically send data to AMQ Streams (Kafka)!
     - debug:
-        msg: Set the environment variable TRANSPORT_MODE=kafka on the generator DC
+        msg: Set the environment variable TRANSPORT_MODE=kafka on the generator DeploymentConfig.
     - debug:
-        msg: You can also change the Kafka broker URL by setting the KAFKA_HOST environment variable
+        msg: You can also change the Kafka broker URL by setting the KAFKA_HOST environment variable, but the default should be fine.
