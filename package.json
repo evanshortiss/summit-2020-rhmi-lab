@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/evanshortiss/summit-2020-rhmi-lab#readme",
   "devDependencies": {
-    "husky": "~3.0.2",
     "integreatly-asciidoc": "0.0.4"
   },
   "dependencies": {}
