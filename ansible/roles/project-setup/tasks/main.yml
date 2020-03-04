@@ -12,7 +12,7 @@
   shell: oc apply -f {{role_path}}/files/kafka.topic.meters.yml -n {{project_name}}
 
 - name: Deploy IoT data generator
-  shell: oc new-app quay.io/evanshortiss/parking-and-junction-data-generator
+  shell: oc new-app quay.io/evanshortiss/summit-2020-rhmi-lab-data-generator
 
 - name: Create PSQL deployment
   shell: oc new-app postgresql-persistent --param=POSTGRESQL_DATABASE=city-info --param=VOLUME_CAPACITY=10Gi --param=POSTGRESQL_VERSION=9.6 --param=POSTGRESQL_USER=rh-summit-admin --param=POSTGRESQL_PASSWORD=changethistosomethingelse -n {{project_name}}

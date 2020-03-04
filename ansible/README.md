@@ -6,12 +6,15 @@ Use this Ansible project to deploy this lab.
 
 The following should be installed on the machine used to deploy the lab:
 
-* RHMI v2 Cluster
-* AMQ Streams Operator installed on the RHMI v2 Cluster
 * OpenShift (`oc`) CLI v4.x or later
 * Ansible CLI 2.7.6 or later
 * JQ CLI v1.6 or later
-* Admin account for the OpenShift v4 Cluster
+
+You also need:
+
+* An RHMI v2 Cluster
+* AMQ Streams Operator installed on the RHMI v2 Cluster
+* Admin (e.g kube:admin) account for the OpenShift v4 Cluster
 
 ## Deployment Instructions
 

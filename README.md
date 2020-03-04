@@ -73,9 +73,9 @@ yarn start:dev
 `OPENSHIFT_HOST` and some other variables) add the following:
 
 ```yaml
-WALKTHROUGH_LOCATIONS: 'https://github.com/integr8ly/tutorial-web-app-walkthroughs#v1.6.4,https://github.com/evanshortiss/rhte-2019-hackathon-on-rhmi.git'
+WALKTHROUGH_LOCATIONS: 'https://github.com/integr8ly/tutorial-web-app-walkthroughs#v1.6.4,https://github.com/evanshortiss/summit-2020-rhmi-lab'
 ```
 
 ### Via OpenShift CLI
 1. Login as `admin` using `oc login -u admin`
-1. Run `oc patch webapp tutorial-web-app-operator -n webapp --type=merge -p '{"spec":{"template":{"parameters":{"WALKTHROUGH_LOCATIONS":"https://github.com/evanshortiss/rhte-2019-hackathon-on-rhmi"}}}}'`
+1. Run `oc patch webapp tutorial-web-app-operator -n webapp --type=merge -p '{"spec":{"template":{"parameters":{"WALKTHROUGH_LOCATIONS":"https://github.com/evanshortiss/summit-2020-rhmi-lab"}}}}'`

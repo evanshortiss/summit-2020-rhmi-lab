@@ -1,15 +1,15 @@
 {
-  "name": "parking-and-junction-data-generator",
+  "name": "summit-2020-rhmi-lab-data-generator",
   "version": "1.0.0",
   "private": true,
-  "description": "Simulates JSON payloads for Meters and Junctions as described in the RHTE 2019 RHMI Hackathon",
+  "description": "Simulates JSON payloads for Meters and Junctions as described in the Red HatSummit 2020 Lab",
   "main": "index.js",
   "scripts": {
     "start": "node generate.js",
     "format": "standard --fix generate.js",
     "nodeshift": "nodeshift --namespace.name city-of-losangeles",
-    "image:build": "docker build . -t quay.io/evanshortiss/parking-and-junction-data-generator:latest",
-    "image:push": "docker push quay.io/evanshortiss/parking-and-junction-data-generator:latest"
+    "image:build": "docker build . -t quay.io/evanshortiss/summit-2020-rhmi-lab-data-generator:latest",
+    "image:push": "docker push quay.io/evanshortiss/summit-2020-rhmi-lab-data-generator:latest"
   },
   "husky": {
     "hooks": {

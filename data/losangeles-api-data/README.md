@@ -1,6 +1,6 @@
 ## Traffic/Parking Sample Data
 
-This hackathon uses data scraped for the LA City APIs for traffic and parking.
+This lab uses data scraped for the LA City APIs for traffic and parking.
 Our PostgreSQL database setup uses this data.
 
 ## Explanation of File Names

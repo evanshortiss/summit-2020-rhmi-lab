@@ -1,9 +1,9 @@
 {
-  "name": "rhte-2019-hackathon-on-rhmi-template-ui",
+  "name": "summit-2020-rhmi-lab-web-ui",
   "version": "0.0.1",
-  "description": "A UI template for the RHTE 2019 RHMI Hackathon built with React & Patternfly 4",
+  "description": "A UI template for the Summit 2020 RHMI Lab built with React & Patternfly 4",
   "main": "server.js",
-  "repository": "https://github.com/evanshortiss/rhte-2019-hackathon-on-rhmi-template-ui",
+  "repository": "https://github.com/evanshortiss/summit-2020-rhmi-lab",
   "license": "MIT",
   "private": true,
   "scripts": {

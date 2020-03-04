@@ -16,7 +16,7 @@ CREATE TABLE meter_info (
    longitude real NOT NULL
 );
 
-CREATE TABLE junction_status_rhte_admin (
+CREATE TABLE junction_status_lab_admin (
   id serial NOT NULL PRIMARY KEY,
   junction_id serial NOT NULL references junction_info(id),
   timestamp TIMESTAMP NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE junction_status_rhte_admin (
   count_ew int NOT NULL
 );
 
-CREATE TABLE meter_status_rhte_admin (
+CREATE TABLE meter_status_lab_admin (
   id serial NOT NULL PRIMARY KEY,
   meter_id serial NOT NULL references meter_info(id),
   timestamp TIMESTAMP NOT NULL,

@@ -35,7 +35,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
   const Header = (
     <PageHeader
-      logo="RHTE 2019 - RHMI Hackathon"
+      logo="Red Hat Summit 2020 Lab"
       logoProps={logoProps}
       toolbar="Welcome!"
       showNavToggle={true}

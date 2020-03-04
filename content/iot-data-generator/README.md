@@ -17,7 +17,7 @@ the total number of meters, junctions, and the update frequency.
 ### Data Structures
 
 Generates Meter and Junction payloads that conform to the spec
-described [at this link](https://github.com/evanshortiss/rhte-2019-hackathon-on-rhmi/tree/master/data/hackathon-data-structures#iot-sensor-data-inputs-amq-streams).
+described in */data/lab-data-structures*.
 
 The parking meter "status" field in payloads are weighted such that the
 following states and probabilities are possible for meters:
@@ -71,7 +71,7 @@ The generator will begin to print data on the console by default.
 If you want to deploy the generator using a pre-built image run the following:
 
 ```
-oc new-app quay.io/evanshortiss/parking-and-junction-data-generator
+oc new-app quay.io/evanshortiss/summit-2020-rhmi-lab-data-generator
 ```
 
 ## Deploy to OpenShift via Nodeshift
