@@ -1,6 +1,6 @@
 :username: {user-sanitized-username}
 
-:kafka-broker-uri: iot-cluster-kafka-brokers.amq-streams.svc:9092
+:kafka-broker-uri: iot-cluster-kafka-brokers.city-of-losangeles.svc.cluster.local:9092
 :fuse-streams-connection-name: AMQ Streams Message Broker
 :fuse-database-connection-name: City Postgres
 :streams-junction-topic-name: junctions
@@ -38,8 +38,12 @@ These environments accelerate engagement timelines, reduce operational risk and 
 
 In this lab you’re tasked with building out a real-time IoT traffic and parking meter management solution for the city of Los Angeles - don't worry we'll be helping you along the way!
 
+The tasks you'll perform include:
+
+{blank}
+
 * Data ingestion of real time traffic and parking meter data from AMQ Streams into a Postgres Database using Red Hat Fuse Online
-* Definition of an OpenAPI compatible API Spec using Apicurio
+* Definition of an OpenAPI compatible API Spec using Apicurito
 * Deployment of a ready-made API using your choice of Runtime technologies - Fuse or Node.js
 * Protection of the API using 3scale API Management
 * Visualisation of the data from the API via a front end web app based on React.js and Patternfly.js
@@ -50,21 +54,16 @@ To get you started, you will be provided with the following infrastructure:
 
 * An AMQ Streams instance with 2 topics - {streams-junction-topic-name} and {streams-meter-topic-name}. These topics will be connected to a live stream of IoT data which needs to be ingested
 * A Postgres server with two databases:
-- A pre populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
+- A pre-populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
 - An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
-* Access to the Apicurio API designer tool for creating the OpenAPI Spec compatible API definition
+* Access to the Apicurito API designer tool for creating the OpenAPI Spec compatible API definition
 * Implementations of the API Server in Fuse and Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
 * Access to 3scale API Management service for protecting your API
 * An implementation of the front end web app with a API calls implemented
 
-.Prerequisites
-
-* `oc` on your local machine
-* a GitHub account (link:https://github.com/join[github.com/join, window="_blank"])
-
 {blank}
 
-The architecture diagram below provides an overview of the complete solution.
+The architecture diagram below provides an overview of the complete solution. Data is flowing from the right to left in the diagram.
 
 image::images/arch.png[integration, role="integr8ly-img-responsive"]
 
@@ -113,8 +112,8 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 == Data Ingestion from AMQ Streams to Postgres using Fuse Online
 
 Fuse Online is an enterprise integration platform that provides connectors for many services, such as AMQ Streams and Postgres.
-In this section we will create two connections - one to AMQ Streams and one to Postgres.
-We will then create an integration that uses these two connections and translates the incoming data from AMQ streams into database *INSERT* statements on Postgres.
+In this section we will create two *Connections* - one to AMQ Streams and one to Postgres.
+We will then create an *Integration* that uses these two connections and translates the incoming data from AMQ Streams into database *INSERT* statements on Postgres.
 
 === Creating the AMQ Streams Connector
 
@@ -355,7 +354,7 @@ Is the integration displayed as *Running* on the *Integration* screen of the lin
 
 
 [time=20]
-== API Definition using Apicurio
+== API Definition using Apicurito
 
 Apicurito is the Red Hat API Designer tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
 The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
