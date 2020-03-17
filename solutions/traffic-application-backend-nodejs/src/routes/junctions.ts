@@ -4,7 +4,7 @@ import * as env from 'env-var';
 import { query } from '../db';
 
 const user = env
-  .get('USER')
+  .get('PG_USERNAME')
   .required()
   .example('evals01')
   .asString();
