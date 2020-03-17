@@ -15,12 +15,12 @@ const validator = createValidator();
 const metersRoute = express.Router();
 
 const allMetersQuerySchema = Joi.object({
-  status: Joi.string().valid([
+  status: Joi.string().valid(
     'available',
     'out-of-service',
     'unknown',
     'occupied'
-  ])
+  )
 });
 const singleMeterQuerySchema = Joi.object({
   meterId: Joi.number()
