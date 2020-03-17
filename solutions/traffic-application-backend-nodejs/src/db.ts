@@ -14,7 +14,7 @@ const PG_HOSTNAME = env
   .asString();
 
 const PG_USERNAME = env
-  .get('PG_HOSTNAME')
+  .get('PG_USERNAME')
   .required()
   .example('evals01')
   .asString();

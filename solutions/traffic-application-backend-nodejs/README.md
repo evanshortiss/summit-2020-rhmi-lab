@@ -6,7 +6,7 @@ the Meters and Junctions API portion of the lab.
 ## Running on OpenShift via Nodeshift
 To use this method of deployment you'll need:
 
-* Node.js v10 or later
+* Node.js v12 or later
 * An OpenShift instance
 * [OpenShift CLI(`oc`)](https://github.com/openshift/origin/releases/tag/v3.11.0)
 
@@ -33,7 +33,7 @@ $ npm run nodeshift
 ## Running Locally without Docker
 To run this application locally you'll need:
 
-* Node.js v10 or later
+* Node.js v12 or later
 * npm v6 or later
 * Git
 
@@ -63,11 +63,10 @@ one that it will use when deployed on OpenShift.
 
 ```
 # Build the latest local commit into a container image
-# If you have uncommitted changes add the "--copy" flag
-$ s2i build . registry.access.redhat.com/rhscl/nodejs-10-rhel7 nodejs-api-server
+$ ./scripts/image.build.sh
 
 # Run our container image
-$ docker run -p 8080:8080 -dit --name nodejs-api-server nodejs-api-server
+$ docker run -p 8080:8080 -dit --name summit-2020-rhmi-lab-nodejs-backend
 ```
 
 This instructs `s2i` to build our source code into an image that will be tagged

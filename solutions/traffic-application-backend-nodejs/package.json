@@ -31,7 +31,7 @@
     "@hapi/joi": "^16.1.8",
     "@nearform/sql": "^1.4.0",
     "cors": "^2.8.5",
-    "env-var": "github:evanshortiss/env-var#6.x",
+    "env-var": "~6.0.4",
     "express": "~4.17.1",
     "express-joi-validation": "^4.0.3",
     "helmet": "~3.21.0",
@@ -54,6 +54,6 @@
     "pino-pretty": "~3.2.1",
     "prettier": "~1.18.2",
     "ts-node": "~8.3.0",
-    "typescript": "~3.4.5"
+    "typescript": "^3.8.3"
   }
 }
