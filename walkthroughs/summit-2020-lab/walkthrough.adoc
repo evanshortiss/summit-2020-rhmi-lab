@@ -1,7 +1,8 @@
 :username: {user-sanitized-username}
 :user-project-name: {user-sanitized-username}-rhmi-lab
 :openshift-console-url: {openshift-host}/dashboards
-:kafka-broker-uri: iot-cluster-kafka-brokers.city-of-losangeles.svc.cluster.local:9092
+:la-project-name: city-of-la
+:kafka-broker-uri: iot-cluster-kafka-brokers.{la-project-name}.svc.cluster.local:9092
 :fuse-streams-connection-name: {user-username} AMQ Streams Message Broker
 :fuse-database-connection-name: {user-username} Postgres
 :streams-junction-topic-name: junctions
@@ -9,7 +10,7 @@
 :streams-junction-data-integration: {user-username} IoT Junction Data Ingestion
 :streams-meter-data-integration: {user-username} IoT Parking Meter Data Ingestion
 
-:postgres-hostname: postgresql.city-of-losangeles.svc.cluster.local
+:postgres-hostname: postgresql.{la-project-name}.svc.cluster.local
 :postgres-port: 5432
 :postgres-database: city-info
 :postgres-connection-url: jdbc:postgresql://{postgres-hostname}:{postgres-port}/{postgres-database}
