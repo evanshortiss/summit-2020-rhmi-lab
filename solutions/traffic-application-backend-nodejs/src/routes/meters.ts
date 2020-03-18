@@ -6,7 +6,7 @@ import * as Joi from '@hapi/joi';
 import { query } from '../db';
 
 const user = env
-  .get('USER')
+  .get('PG_USERNAME')
   .required()
   .example('evals01')
   .asString();
