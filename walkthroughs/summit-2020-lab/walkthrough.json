@@ -3,9 +3,6 @@
     "repos": [],
     "managedServices": [
       {
-        "name": "amqonline"
-      },
-      {
         "name": "fuse"
       }
     ],

@@ -1,12 +1,13 @@
 :username: {user-sanitized-username}
-
+:user-project-name: {user-sanitized-username}-rhmi-lab
+:openshift-console-url: {openshift-host}/dashboards
 :kafka-broker-uri: iot-cluster-kafka-brokers.city-of-losangeles.svc.cluster.local:9092
-:fuse-streams-connection-name: AMQ Streams Message Broker
-:fuse-database-connection-name: City Postgres
+:fuse-streams-connection-name: {user-username} AMQ Streams Message Broker
+:fuse-database-connection-name: {user-username} Postgres
 :streams-junction-topic-name: junctions
-:streams-meter-topic-name: meter
-:streams-junction-data-integration: IoT Junction Data Ingestion
-:streams-meter-data-integration: IoT Parking Meter Data Ingestion
+:streams-meter-topic-name: meters
+:streams-junction-data-integration: {user-username} IoT Junction Data Ingestion
+:streams-meter-data-integration: {user-username} IoT Parking Meter Data Ingestion
 
 :postgres-hostname: postgresql.city-of-losangeles.svc.cluster.local
 :postgres-port: 5432
@@ -25,6 +26,7 @@
 :3Scale-ProductName: 3scale API Management
 :3scale-base-name: {user-sanitized-username}-traffic-service
 :3scale-api-name: {3scale-base-name}-api
+:3scale-backend-name: {3scale-base-name}-api-backend
 :3scale-plan-name: {3scale-base-name}-plan
 :3scale-app-name: {3scale-base-name}-app
 :3scale-api-key: {3scale-base-name}-key
@@ -56,8 +58,8 @@ To get you started, you will be provided with the following infrastructure:
 * A Postgres server with two databases:
 - A pre-populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
 - An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
-* Access to the Apicurito API designer tool for creating the OpenAPI Spec compatible API definition
-* Implementations of the API Server in Fuse and Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
+* Access to the Apicurito API designer tool for exploring the OpenAPI Spec compatible API definition
+* Implementation of the API Server Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
 * Access to 3scale API Management service for protecting your API
 * An implementation of the front end web app with a API calls implemented
 
@@ -207,7 +209,7 @@ Is the new Postgres connection displayed on the *Connections* screen of the link
 Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
 
 
-=== Creating the integration between AMQ Streams and Postgres for traffic data
+=== Creating the Integration between AMQ Streams and Postgres for traffic data
 
 . Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
 
@@ -258,8 +260,8 @@ Verify that you followed each step in the procedure above.  If you are still hav
 INSERT INTO {postgres-junction-status-table} (junction_id, timestamp, count_ns, count_ew)
 VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 ----
-.. Leave *Batch update* set to *No*
-.. Click *Next*
+.. Leave the *Batch update* and *Raise error when record not found* boxes unchecked.
+.. Click *Next*.
 
 . When prompted to *Add to Integration*, click on the blue *+* icon between the *Subscribe* step and the *Invoke SQL* step.
 
@@ -280,22 +282,21 @@ VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 ----
 . Click *Save and publish*.
 
-. Monitor the *Integration Summary* dashboard until a green check mark is displayed beside the new integration.
-The integration may take a number of minutes to complete building.
+. The *Integration Summary* dashboard will show your *Integration* is being built into a container image that will be deployed on the OpenShift cluster.
 
 [type=verification]
-Is the integration displayed as *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+Is the integration displayed as *Building*, *Deploying* or *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
 
 [type=verificationFail]
 
 ****
-. Wait for the integration to appear. This can take several minutes.
+. Navigate to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
 
-. Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+. Verify that you followed each step in the procedure above. If you are still having issues, contact your administrator.
 ****
 
 
-=== Creating the integration between AMQ Streams and Postgres for parking meter data
+=== Creating the Integration between AMQ Streams and Postgres for parking meter data
 
 . Repeat the steps above for the *{streams-junction-data-integration}* integration, with the following changes:
 
@@ -319,6 +320,7 @@ Is the integration displayed as *Running* on the *Integration* screen of the lin
 	}
 }
 ----
+.. Enter *junction_data* in the *Data Type Name* field.
 .. When configuring the SQL Statement, enter the following:
 +
 [subs="attributes+"]
@@ -330,18 +332,18 @@ INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
 ... meterId => meter_id
 ... timestamp => timestamp
 ... status => status_text
+.. Enter {streams-meter-data-integration} as the Integration name then click *Save and Publish*.
 
 [type=verification]
-Is the integration displayed as *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+Is the integration displayed as *Integrations* screen of the link:{fuse-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
 
 [type=verificationFail]
 
 ****
-. Wait for the integration to appear. This can take several minutes.
+. Navigate to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
 
-. Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+. Verify that you followed each step in the procedure above. If you are still having issues, contact your administrator.
 ****
-
 
 
 [type=taskResource]
@@ -351,9 +353,7 @@ Is the integration displayed as *Running* on the *Integration* screen of the lin
 ****
 
 
-
-
-[time=20]
+[time=10]
 == API Definition using Apicurito
 
 Apicurito is the Red Hat API Designer tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
@@ -363,71 +363,40 @@ When properly defined, a consumer can understand and interact with the remote se
 An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
 For more information on the *OpenAPI Specification* see the link:{oas3-url}[Open API Specification, window="_blank"] on GitHub
 
-In this section we will use the Red Hat API designer to create an OpenAPI Specification which will then be used to bootstrap the development of our API Server.
-The APIs created should combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being injested from AMQ Streams.
+In this section we will use the Red Hat API designer to explore a pre-built an OpenAPI Specification which is used in the implementation of our API Server.
+The APIs created will combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being ingested from AMQ Streams.
 
-=== API Data Types
-You will need to create at least two main API Data Types - *Junction* and *Meter*.
-These Data Types form the basis for the APIs which will be created to act upon the data types.
-For more information on *Data Types* see the link:{oas3-data-types-url}[Open API Spec Data Types Documentation]
+=== Viewing an Open API Spec
 
-. Log in to the link:{apicurio-url}[Red Hat API Designer, window="_blank"] console.
-. Click the *New API* Button
-. Click the *Add a data type* link on the left of the screen under the *Data Types* heading
-. Enter the value of `Meter` in the *Name* field
-. Enter the following vale for *JSON Example*
-+
-----
-{
-  "meter_id": 1,
-  "last_updated": "2019-10-15T20:12:32Z",
-  "address": "1301 N LA BREA AVE",
-  "latitude": 34.095452,
-  "longitude": -118.344219,
-  "status": "available"
-}
-----
-. Click the *REST Resource* box to create default REST resources for the Meter data type
-. Click *Save*
+. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
+. Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
+. Open the link:{apicurio-url}[Apicurito Dashboard] and click the *OpenAPI* button.
+. When prompted to choose a file select the JSON file you just unzipped.
 
-{blank}
+[type=verification]
+Did the Apicurito UI render the OpenAPI Spec using the file you uploaded?
 
-Repeat the above steps to add a Data Type for *Junction*, providing the following value for the *JSON Example* field.
+[type=verificationFail]
+Verify that you selected the correct JSON file. If the OpenAPI Spec fails to render in Apicurito please contact the lab administrator.
 
-----
-{
-  "id": 1,
-  "junction_name": "CANOGA AV AT VANOWEN ST",
-  "latitude": 34.18834537329447,
-  "longitude": -118.59747110546994,
-  "east_west_count" : 10,
-  "north_south_count" : 8
-}
-----
+=== View API Data Types
+
+This API contains two primary data types, the *Junction* and *Meter*. Here's how you can view their properties using Apicurito.
+
+. On the left-hand side of the Apicurito UI you should see a *Data Types* section after the OpenAPI Spec JSON was loaded.
+. Choose the *Junction* item under the *Data Types* heading. Information and properties of a *Junction* are now displayed on the right of the Apicurito UI.
+. Select the *Source* tab at the top of the right-hand pane to view the data that represents a *Junction* type in this OpenAPI Spec.
+. Click the *As JSON* button on the right to toggle between JSON and YAML representations of the OpenAPI spec.
+. Choose the *Meter* item under the *Data Types* heading.
+. Note that the *Meter* has fewer properties than the *Junction*, but it utilises an *Enum* type to specify valid states that a Meter can be in.
 
 === API Paths
-Default API Paths have automatically been created when creating the *Meter* and *Junction* data types, by clicking the *REST Resource* box during the data type creation.
-This will provide default implementations for *GET* and *POST* paths, both for listing all *Meter* and *Junction* data types as well as getting specific *Meter* and *Junction* data types by id.
-The API should only support read operations, which means that the *POST*, *PUT* and *DELETE* methods should be removed.
 
-The *GET* endpoint for the *Meter* data type should be extended to support an optional query paramter called *status* which can be used to return a filtered list of *Meter* objects that match the specific status.
-The supported values for status that will need to be catered for during API implementation are "available", "occupied", "unknown", or "out-of-service".
-
-. Select the */meters* path.
-. Click on the *GET* operation.
-. Click the *+* symbol to the right of *QUERY PARAMETERS*
-. Enter the following value for *Name*: `status`
-. Enter the following value for *Description*: `Filter list of returned meters by status. Supported values for status are are "available", "occupied", "unknown", or "out-of-service".`
-. Under Type Information, leave the parameter as *Not Required* and select `String` from the *type* dropdown
-. Click Save.
-
-=== Download the completed OpenAPI Specification
-
-Once you have fully defined the API specification, click *Generate* => *Fuse Camel Project*
-You should also download the specification in either JSON or YAML format for use in the next section, if you wish to implement the API in a technology other than *Fuse Camel*.
+. Lastly, explore the four entries listed under the *Paths* heading and note that each path only supports *GET* requests since this going to be a readonly API.
 
 [time=15]
-== Deployment of a Fuse or Node.js API Implementation
+== Deployment of the API Implementation
+In this section you'll deploy a pre-built implementation of the OpenAPI Specification you explored in the previous section.
 
 === Connecting to Postgres
 
@@ -441,26 +410,84 @@ When deploying your chosen API server implementation, you will need to use the f
 
 {blank}
 
-This information will be provided to your API server via a *ConfigMap*, backed by a *Secret* in OpenShift.
+This information will be provided to your API server via a *Secret* you will create in the OpenShift UI.
 
-=== Fuse + Spring Boot
+=== Create an OpenShift Project
 
-TODO - Instructions for deployment of *solutions/traffic-application-backend-camel*
+. Login to the link:{openshift-console-url}[OpenShift Console].
+. Choose *Home > Projects* from the side menu.
+. Click the *Create Project* button.
+.. Enter `{user-project-name}` in the *Name* field.
+.. Enter `{user-sanitized-username} RHMI Lab` in the *Display Name* field.
+.. Click *Create*.
 
-=== Node.js
+=== Create a DeploymentConfig
 
-TODO - Instructions for deployment of *solutions/traffic-application-backend-nodejs*
+. Login to the link:{openshift-console-url}[OpenShift Console].
+. Choose *Home > Projects* from the side menu and select your *{user-project-name}* from the list. This will display the *Project Details* screen.
+. Select the *Workloads* tab from the *Project Details* screen.
+. Select *add other content* from the *Workloads* screen.
+. Choose the *Container Image* option from the *Add* screen.
+. On the *Deploy Image* screen enter the following:
+.. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend`.
+.. Enter `{username}-traffic-api` in *Application Name* field.
+.. Enter `{username}-traffic-api` in the *Name* field.
+.. Under the *Resources* section Choose *DeploymentConfig*.
+.. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
+
+=== Create a Secret
+
+. Login to the link:{openshift-console-url}[OpenShift Console].
+. Choose *Home > Projects* from the side menu and select your *{user-project-name}* from the list. This will display the *Project Details* screen.
+. Choose *Workloads > Secrets* and click the *Create > Key/Value Secret* button on the *Secrets* screen.
+. Enter *pg-secrets* in the *Secret Name* field.
+. Create a key named *username* with a value of *{postgres-username}*.
+. Click *Add Key/Value* to create another key/value pair.
+. Enter the key name of *password* with a value of *{postgres-password}*.
+. Click *Save*.
+
+=== Update the DeploymentConfig
+
+Now that you've created a *Secret* containing the database connection information it's time to put it to use.
+
+The key/value pairs stored in the *Secret* can be associated with the *DeploymentConfig*, and exposed to the underlying application as *Environment Variables*.
+
+. Login to the link:{openshift-console-url}[OpenShift Console].
+. Choose *Workloads > DeploymentConfigs* from the side menu and verify the selected Project is set to *{user-project-name}* using the dropdown.
+. Select the *{username}-traffic-api* item in the list. The *Deployment Config Details* screen is displayed.
+. Select *Environment* tab and click *Add from ConfigMap or Secret*.
+. In the new row, `PG_USERNAME` in the *name* field and select the *pg-secrets* resource and *username* key.
+. Click *Add from ConfigMap or Secret* again.
+. In the new row, `PG_PASSWORD` in the *name* field and select the *pg-secrets* resource and *password* key.
+. Click the *Save* button.
+
+=== Verify the Deployment
+
+. Login to the link:{openshift-console-url}[OpenShift Console].
+. Choose *Workloads > Pods* and verify the selected Project is set to *{user-project-name}* using the dropdown.
+. You should see a *Pod* named *{username}-traffic-api* followed by a number in the list. The *Status* of this Pod should be *Running*.
+. Choose *Networking > Routes* from the side menu and verify the selected Project is set to *{user-project-name}* using the dropdown.
+. A route named *{username}-traffic-api* should be listed in a table.
+. Click the URL listed under the *Location* to view the Swagger UI docs for your deployed Node.js API.
+
+[type=verification]
+Is a webpage with a Swagger UI and list of endpoints displayed in your web browser after opening the *Location* URL from the previous section?
+
+[type=verificationFail]
+
+Verify that the *Pod* you checked as part of *Verify the Deployment* is in a *Running* state. If the URL does not display a Swagger UI after a few moments contact the lab administrator.
 
 [time=25]
 == API Protection using 3scale API Management
 
 In 3scale, we will be dealing with the following constructs:
-. An *API* defines the back end service you wish to protect
+. A *Product* defines the developer/consumer facing end service you wish to make available for consumption.
+. A *Backend* defines the backend service(s) you wish to protect and make available via a *Product*.
 . An *Applications* define the credentials (e.g. API Key) to access your API. Applications are stored within *Developer Accounts*.
-. An *Application Plan* determines the access policies and is always associated with one Application.
+. An *Application Plan* determines the access policies and is always associated with one *Application*.
 
 In order to secure the traffic and parking meter service that was built in the previous section, we will be performing the following activities in 3scale:
-. Creating a new API
+. Creating a new Product and Backend
 . Creating an Application Plan
 . Creating an Application
 . Configuring the API
@@ -470,8 +497,10 @@ In order to secure the traffic and parking meter service that was built in the p
 
 === API Management Login
 
+TODO - 3scale 2.6 to 2.7 changes
+
 . Open the link:{api-management-url}[3scale Login screen, window="_blank"].
-. Click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard.
+. Click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
 . Dismiss the *How does 3Scale work?* option which is displayed the first time you log in to {3Scale-ProductName}. The main Dashboard is displayed.
 
 {blank}
@@ -480,11 +509,11 @@ In order to secure the traffic and parking meter service that was built in the p
 Can you see the {3Scale-ProductName} Dashboard and navigate the main menu?
 
 [type=verificationFail]
-Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
+Verify that you followed each step in the procedure above. If you are still having issues, contact your administrator.
 
-=== Creating a new API
+=== Creating a New Product
 
-. From the *Dashboard*, select the *New API* item.
+. From the *Dashboard*, select the *New Product* item.
 . Select the *Define Manually* option.
 . Enter the following as the *Name* and *System name*:
 +
@@ -493,7 +522,7 @@ Verify that you followed each step in the procedure above.  If you are still hav
 {3scale-api-name}
 ----
 . Leave the *Description* field empty.
-. Click *Add API* at the bottom of the screen.
+. Click *Create Product* at the bottom of the screen.
 
 {blank}
 
@@ -541,8 +570,10 @@ Verify that you followed each step in the procedure above.  If you are still hav
 === Configuring the API
 
 . Click *Integration > Configuration* from the side navigation.
-. Click the *add the base URL of your API and save the configuration.* button.
-. In the *Private Base URL* field, enter the route name that was created for your application in the *API Implementation* section (i.e. when you were coding your Application):
+. Click the *add a Backend and promote the configuration.* button.
+. Click the *Create a Backend that can be used by any Product* link:
+.. Enter *{3scale-backend-name}* in the *Name* and *System name* fields.
+.. In the *Private endpoint* field enter `http://{user-username}-traffic-api.{user-project-name}.svc.cluster.local:8080`.
 . Leave the *Staging Public Base URL* with it's default value.
 . Click *Update & test in Staging Environment* to save your work.
 
