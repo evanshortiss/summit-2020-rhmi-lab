@@ -1,7 +1,7 @@
 :username: {user-sanitized-username}
 :user-project-name: {user-sanitized-username}-rhmi-lab
 :openshift-console-url: {openshift-host}/dashboards
-:la-project-name: city-of-la
+:la-project-name: city-of-losangeles
 :kafka-broker-uri: iot-cluster-kafka-brokers.{la-project-name}.svc.cluster.local:9092
 :fuse-streams-connection-name: {user-username} AMQ Streams Message Broker
 :fuse-database-connection-name: {user-username} Postgres
