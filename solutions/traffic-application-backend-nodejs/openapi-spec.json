@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "New API",
+    "title": "Traffic Junction and Meter API",
     "description": "Los Angeles Traffic and Meter API",
     "version": "1.0"
   },
