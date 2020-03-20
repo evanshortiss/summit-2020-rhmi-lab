@@ -46,7 +46,7 @@ The tasks you'll perform include:
 {blank}
 
 * Data ingestion of real time traffic and parking meter data from AMQ Streams into a Postgres Database using Red Hat Fuse Online
-* Definition of an OpenAPI compatible API Spec using Apicurito
+* Definition of an OpenAPI compatible API Spec using Red Hat API Designer
 * Deployment of a ready-made API using your choice of Runtime technologies - Fuse or Node.js
 * Protection of the API using 3scale API Management
 * Visualisation of the data from the API via a front end web app based on React.js and Patternfly.js
@@ -59,7 +59,7 @@ To get you started, you will be provided with the following infrastructure:
 * A Postgres server with two databases:
 - A pre-populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
 - An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
-* Access to the Apicurito API designer tool for exploring the OpenAPI Spec compatible API definition
+* Access to the Red Hat API Designer tool for exploring the OpenAPI Spec compatible API definition
 * Implementation of the API Server Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
 * Access to 3scale API Management service for protecting your API
 * An implementation of the front end web app with a API calls implemented
@@ -74,30 +74,30 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 [type=walkthroughResource,serviceName=openshift]
 .Red Hat OpenShift
 ****
-* link:{openshift-host}/console[Console, window="_blank"]
+* link:{openshift-console-url}[Console, window="_blank"]
 * link:https://help.openshift.com/[Openshift Online Help Center, window="_blank"]
 * link:https://blog.openshift.com/[Openshift Blog, window="_blank"]
 ****
 
-[type=walkthroughResource,serviceName=fuse]
+[type=walkthroughResource,serviceName=fuse-managed]
 .Fuse Online
 ****
-* link:{fuse-url}[Console, window="_blank", id="resources-fuse-url"]
+* link:{fuse-url}[Console, window="_blank"]
 * link:https://access.redhat.com/documentation/en-us/red_hat_fuse/7.4/html/integrating_applications_with_fuse_online/index[Documentation, window="_blank"]
 * link:https://www.redhat.com/en/technologies/jboss-middleware/fuse-online[Overview, window="_blank"]
 ****
 
-[type=walkthroughResource,serviceName=apicurio]
-.Apicurito
+[type=walkthroughResource,serviceName=apicurito]
+.Red Hat API Designer
 ****
-* link:{apicurio-url}[Console, window="_blank", id="resources-apicurio-url"]
+* link:{apicurio-url}[Console, window="_blank"]
 ****
 
 [type=walkthroughResource,serviceName=3scale]
 .3Scale
 ****
-* link:https://{user-username}-admin.{openshift-app-host}[Console, window="_blank"]
-* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.6/[Documentation, window="_blank"]
+* link:{api-management-url}[Console, window="_blank"]
+* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.7/[Documentation, window="_blank"]
 * link:https://www.redhat.com/en/technologies/jboss-middleware/3scale[Overview, window="_blank"]
 ****
 
@@ -106,7 +106,7 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 ****
 * link:{che-url}[Console, window="_blank"]
 * link:https://developers.redhat.com/products/codeready-workspaces/overview/[Overview, window="_blank"]
-* link:https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/1.2/[Documentation, window="_blank"]
+* link:https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.0/[Documentation, window="_blank"]
 ****
 
 :sectnums:
@@ -120,7 +120,7 @@ We will then create an *Integration* that uses these two connections and transla
 
 === Creating the AMQ Streams Connector
 
-. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console. Login if prompted.
 
 . Select *Connections* from the left hand menu.
 
@@ -286,7 +286,7 @@ VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 . The *Integration Summary* dashboard will show your *Integration* is being built into a container image that will be deployed on the OpenShift cluster.
 
 [type=verification]
-Is the integration displayed as *Building*, *Deploying* or *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+Is the integration displayed as *Building*, *Deploying*, or *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
 
 [type=verificationFail]
 
@@ -321,7 +321,7 @@ Is the integration displayed as *Building*, *Deploying* or *Running* on the *Int
 	}
 }
 ----
-.. Enter *junction_data* in the *Data Type Name* field.
+.. Enter *meter_data* in the *Data Type Name* field.
 .. When configuring the SQL Statement, enter the following:
 +
 [subs="attributes+"]
@@ -333,7 +333,7 @@ INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
 ... meterId => meter_id
 ... timestamp => timestamp
 ... status => status_text
-.. Enter {streams-meter-data-integration} as the Integration name then click *Save and Publish*.
+.. Enter *{streams-meter-data-integration}* as the Integration name then click *Save and Publish*.
 
 [type=verification]
 Is the integration displayed as *Integrations* screen of the link:{fuse-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
@@ -355,9 +355,9 @@ Is the integration displayed as *Integrations* screen of the link:{fuse-url}/int
 
 
 [time=10]
-== API Definition using Apicurito
+== API Definition using Red Hat API Designer
 
-Apicurito is the Red Hat API Designer tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
+Red Hat API Designer is a tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
 The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
 
 When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
@@ -371,21 +371,21 @@ The APIs created will combine data from the provided Lookup Tables in Postgres -
 
 . Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
 . Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
-. Open the link:{apicurio-url}[Apicurito Dashboard] and click the *OpenAPI* button.
+. Open the link:{apicurio-url}[Red Hat API Designer Dashboard] and click the *OpenAPI* button.
 . When prompted to choose a file select the JSON file you just unzipped.
 
 [type=verification]
-Did the Apicurito UI render the OpenAPI Spec using the file you uploaded?
+Did the Red Hat API Designer UI render the OpenAPI Spec using the file you uploaded?
 
 [type=verificationFail]
-Verify that you selected the correct JSON file. If the OpenAPI Spec fails to render in Apicurito please contact the lab administrator.
+Verify that you selected the correct JSON file. If the OpenAPI Spec fails to render in Red Hat API Designer please contact the lab administrator.
 
 === View API Data Types
 
-This API contains two primary data types, the *Junction* and *Meter*. Here's how you can view their properties using Apicurito.
+This API contains two primary data types, the *Junction* and *Meter*. Here's how you can view their properties using Red Hat API Designer.
 
-. On the left-hand side of the Apicurito UI you should see a *Data Types* section after the OpenAPI Spec JSON was loaded.
-. Choose the *Junction* item under the *Data Types* heading. Information and properties of a *Junction* are now displayed on the right of the Apicurito UI.
+. On the left-hand side of the Red Hat API Designer UI you should see a *Data Types* section after the OpenAPI Spec JSON was loaded.
+. Choose the *Junction* item under the *Data Types* heading. Information and properties of a *Junction* are now displayed on the right of the Red Hat API Designer UI.
 . Select the *Source* tab at the top of the right-hand pane to view the data that represents a *Junction* type in this OpenAPI Spec.
 . Click the *As JSON* button on the right to toggle between JSON and YAML representations of the OpenAPI spec.
 . Choose the *Meter* item under the *Data Types* heading.
@@ -401,7 +401,7 @@ In this section you'll deploy a pre-built implementation of the OpenAPI Specific
 
 === Connecting to Postgres
 
-When deploying your chosen API server implementation, you will need to use the following details to connect your API Server to your Postgres DB:
+When deploying your the API server implementation, you will need to use the following details to connect your API Server to your Postgres DB:
 
 . Username: `{postgres-username}`
 . Password: `{postgres-password}`
@@ -411,43 +411,44 @@ When deploying your chosen API server implementation, you will need to use the f
 
 {blank}
 
-This information will be provided to your API server via a *Secret* you will create in the OpenShift UI.
-
-=== Create an OpenShift Project
-
-. Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Home > Projects* from the side menu.
-. Click the *Create Project* button.
-.. Enter `{user-project-name}` in the *Name* field.
-.. Enter `{user-sanitized-username} RHMI Lab` in the *Display Name* field.
-.. Click *Create*.
+The *username* and *password* information will be provided to your API server via a *Secret* you will create in the OpenShift UI.
 
 === Create a DeploymentConfig
 
 . Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Home > Projects* from the side menu and select your *{user-project-name}* from the list. This will display the *Project Details* screen.
+. Choose *Home > Projects* from the side menu and select your the {walkthrough-namespace} *Project* from the list. This will display the *Project Details* screen.
 . Select the *Workloads* tab from the *Project Details* screen.
 . Select *add other content* from the *Workloads* screen.
 . Choose the *Container Image* option from the *Add* screen.
 . On the *Deploy Image* screen enter the following:
-.. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend`.
-.. Enter `{username}-traffic-api` in *Application Name* field.
-.. Enter `{username}-traffic-api` in the *Name* field.
-.. Under the *Resources* section Choose *DeploymentConfig*.
+.. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend` and click the search icon to display the container image details.
+.. Leave the *Name* and *Application Name* fields at their default values.
+.. Under the *Resources* section Choose *DeploymentConfig* if prompted.
 .. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
+. Finally, click *Create* to deploy the container image.
+
+At this point you've successfully created a *DeploymentConfig* for your application, but it needs extra configuration to connect to the Postgres database.
 
 === Create a Secret
+
+Secrets can be used to store sensitive information securely such that it's not visible in plaintext when interacting with the OpenShift Cluster.
 
 . Login to the link:{openshift-console-url}[OpenShift Console].
 . Choose *Home > Projects* from the side menu and select your *{user-project-name}* from the list. This will display the *Project Details* screen.
 . Choose *Workloads > Secrets* and click the *Create > Key/Value Secret* button on the *Secrets* screen.
 . Enter *pg-secrets* in the *Secret Name* field.
-. Create a key named *username* with a value of *{postgres-username}*.
+. Create a key named *username* with a value of `{postgres-username}`.
 . Click *Add Key/Value* to create another key/value pair.
-. Enter the key name of *password* with a value of *{postgres-password}*.
-. Click *Save*.
+. Enter the key name of *password* with a value of `{postgres-password}`.
+. Click *Create*.
 
-=== Update the DeploymentConfig
+[type=verification]
+Is the Secret listed under *Workloads > Secrets*, and if you view it are the *username* and *password* values obscured in the OpenShift UI?
+
+[type=verificationFail]
+Verify that you're in the correct section of the OpenShift UI and followed the directions. If the Secret cannot be created or viewed please talk to your lab administrator.
+
+=== Update the DeploymentConfig with the Postgres Secret
 
 Now that you've created a *Secret* containing the database connection information it's time to put it to use.
 
