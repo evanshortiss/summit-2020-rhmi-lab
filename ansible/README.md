@@ -48,7 +48,7 @@ ansible-playbook playbooks/uninstall.yml \
 
 ## Verify the Deployment
 
-Verify that the `city-of-losangeles` project exists.
+Login as a kubeadmin user and verify that the `city-of-losangeles` project exists.
 
 Next, connect to the database Pod on OpenShift in the `city-of-losangeles`
 project:
@@ -77,3 +77,15 @@ select * from meter_info;
 -- Should fail since evals users do not have write access to the city-info db
 UPDATE meter_info SET address='oops' WHERE id=0;
 ```
+
+After this try login as a lab user using the `rhmi-lab-htpasswd` option on the
+OpenShift login screen and credential such as as `evals01` and the password
+`evals01-password`.
+
+## Managing the Lab
+
+Some key points.
+
+1. You must configure the `iot-data-generator` to send data to Kafka since it defaults to simply logging to stdout. Do this via `oc set env dc/summit-2020-rhmi-lab-data-generator TRANSPORT_MODE=kafka -n city-of-losangeles`. You can set it back to `console` (the default) if you need to limit data generation.
+2. Kafka Integrations in Fuse will ignore old data in topics. This means you cannot simply preload the topics with data then set `TRANSPORT_MODE` back to `console`.
+3. To login to Postgres as an admin use `psql -U rh-summit-admin -d city-info -W` and the password set in the Ansible script that deployed the DB.

@@ -7,7 +7,7 @@ facilitate the lab.
 It also contains a Ansible Playbooks to deploy the lab infrastructure on a
 pre-existing RHMI (Integreatly) v2 Cluster.
 
-## Lab Deployment
+## Lab Deployment and Administration
 Refer to [ansible/README](ansible/README.md) for instructions.
 
 ## Requirements for Development
