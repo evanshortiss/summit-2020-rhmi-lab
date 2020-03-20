@@ -36,6 +36,9 @@ app.use(require('cors')());
 // Log incoming requests
 app.use(require('morgan')('combined'));
 
+// We're returning a large amount of JSON, so compress it
+app.use(require('compression')())
+
 // Redirect to the api-docs by default
 app.get('/', (req: express.Request, res: express.Response) => {
   res.redirect('/api-docs');

@@ -1,7 +1,6 @@
 import { Pool } from 'pg';
 import * as env from 'env-var';
 import log from './log';
-import { SqlStatement } from '@nearform/sql';
 
 const PG_DATABASE = env
   .get('PG_DATABASE')
@@ -35,11 +34,11 @@ const pool = new Pool({ connectionString });
  * @param sql
  * @param params
  */
-export async function query<RowType>(sql: SqlStatement) {
+export async function query<RowType>(sql: string, params?: any[]) {
   log.debug('query sql:%s', sql);
 
   const client = await pool.connect();
-  const response = await client.query<RowType>(sql);
+  const response = await client.query<RowType>(sql, params);
 
   client.release();
 
