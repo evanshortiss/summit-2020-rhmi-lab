@@ -4,6 +4,7 @@ import log from './log';
 import * as swaggerUi from 'swagger-ui-express';
 import junctionsRoute from './routes/junctions';
 import metersRoute from './routes/meters';
+import { resolve } from 'path';
 
 let swaggerJson;
 try {
@@ -43,6 +44,11 @@ app.use(require('compression')())
 app.get('/', (req: express.Request, res: express.Response) => {
   res.redirect('/api-docs');
 });
+
+app.get('/openapi-spec.json', (req, res) => {
+  res.setHeader('content-type', 'application/swagger+json')
+  res.sendFile(resolve(__dirname, '../openapi-spec.json'))
+})
 
 // Setup an api-docs endpoint using swagger ui
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
