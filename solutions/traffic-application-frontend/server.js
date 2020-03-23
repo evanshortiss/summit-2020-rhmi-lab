@@ -5,7 +5,7 @@ const app = express()
 const env = require('env-var')
 const { resolve } = require('path')
 
-const PORT = env.get('PORT', '8080').asPortNumber()
+const PORT = env.get('PORT').default(8080).asPortNumber()
 
 app.use(require('morgan')('combined'))
 app.use(express.static(resolve(__dirname, 'dist/')))
