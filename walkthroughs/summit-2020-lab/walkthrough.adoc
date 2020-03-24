@@ -1,5 +1,4 @@
 :username: {user-sanitized-username}
-:user-project-name: {user-sanitized-username}-rhmi-lab
 :openshift-console-url: {openshift-host}/dashboards
 :la-project-name: city-of-losangeles
 :kafka-broker-uri: iot-cluster-kafka-brokers.{la-project-name}.svc.cluster.local:9092
@@ -9,7 +8,7 @@
 :streams-meter-topic-name: meters
 :streams-junction-data-integration: {user-username} IoT Junction Data Ingestion
 :streams-meter-data-integration: {user-username} IoT Parking Meter Data Ingestion
-
+:dc-name: summit-2020-rhmi-lab-nodejs-backend
 :postgres-hostname: postgresql.{la-project-name}.svc.cluster.local
 :postgres-port: 5432
 :postgres-database: city-info
@@ -31,6 +30,9 @@
 :3scale-plan-name: {3scale-base-name}-plan
 :3scale-app-name: {3scale-base-name}-app
 :3scale-api-key: {3scale-base-name}-key
+:3scale-staging-api-host: https://{user-username}-traffic-api-staging.{openshift-app-host}:443
+
+:is-name: traffic-frontend
 
 = Red Hat Summit 2020 RHMI Lab
 
@@ -120,7 +122,9 @@ We will then create an *Integration* that uses these two connections and transla
 
 === Creating the AMQ Streams Connector
 
-. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console. Login if prompted.
+In this step you will create a *Connection* that will enable your *Integration* to connect to a pre-existing AMQ Streams Broker.
+
+. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console. Accept the permissions requests if prompted.
 
 . Select *Connections* from the left hand menu.
 
@@ -371,7 +375,7 @@ The APIs created will combine data from the provided Lookup Tables in Postgres -
 
 . Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
 . Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
-. Open the link:{apicurio-url}[Red Hat API Designer Dashboard] and click the *OpenAPI* button.
+. Open the link:{apicurio-url}[Red Hat API Designer Dashboard, window="_blank"] and click the *OpenAPI* button.
 . When prompted to choose a file select the JSON file you just unzipped.
 
 [type=verification]
@@ -393,7 +397,11 @@ This API contains two primary data types, the *Junction* and *Meter*. Here's how
 
 === API Paths
 
-. Lastly, explore the four entries listed under the *Paths* heading and note that each path only supports *GET* requests since this going to be a readonly API.
+. Lastly, click each of four entries listed under the *Paths* heading and note that each path only supports *GET* requests since this going to be a readonly API.
+. Two of the endpoints support a path parameter as denoted by the placeholder brackets - `{}`, for example `/meters/32` would return information for a meter with the ID of `32`.
+. Note that the `/meters` meters endpoint supports a query parameter named `status` that can be set to one of four values defined by an *Enum* type.
+
+Once you're happy that you understand the API endpoints and parameters continue to the next section.
 
 [time=15]
 == Deployment of the API Implementation
@@ -401,7 +409,7 @@ In this section you'll deploy a pre-built implementation of the OpenAPI Specific
 
 === Connecting to Postgres
 
-When deploying your the API server implementation, you will need to use the following details to connect your API Server to your Postgres DB:
+When deploying API server implementation, you will need to use the following details to connect your API Server to your Postgres DB:
 
 . Username: `{postgres-username}`
 . Password: `{postgres-password}`
@@ -411,35 +419,39 @@ When deploying your the API server implementation, you will need to use the foll
 
 {blank}
 
-The *username* and *password* information will be provided to your API server via a *Secret* you will create in the OpenShift UI.
+The *username* and *password* information will be provided to your API server via a *Secret* that you will create in the OpenShift UI.
 
 === Create a DeploymentConfig
 
-. Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Home > Projects* from the side menu and select your the {walkthrough-namespace} *Project* from the list. This will display the *Project Details* screen.
+A *DeploymentConfig* is an OpenShift API Object that defines the state and deployment environment of an application. This includes, but isn't limited to the number of instances (known as *Pods*) and environment variables.
+
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Choose *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
 . Select the *Workloads* tab from the *Project Details* screen.
 . Select *add other content* from the *Workloads* screen.
 . Choose the *Container Image* option from the *Add* screen.
 . On the *Deploy Image* screen enter the following:
 .. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend` and click the search icon to display the container image details.
 .. Leave the *Name* and *Application Name* fields at their default values.
-.. Under the *Resources* section Choose *DeploymentConfig* if prompted.
+.. Under the *Resources* section choose *DeploymentConfig* if prompted.
 .. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
 . Finally, click *Create* to deploy the container image.
 
-At this point you've successfully created a *DeploymentConfig* for your application, but it needs extra configuration to connect to the Postgres database.
+{blank}
+
+At this point you've successfully created a *DeploymentConfig* for your application, but it needs some modifications to connect to the City Postgres database.
 
 === Create a Secret
 
-Secrets can be used to store sensitive information securely such that it's not visible in plaintext when interacting with the OpenShift Cluster.
+Secrets can be used to store sensitive information securely such that it's not visible in plaintext when interacting with the OpenShift Cluster. The following steps will have you create a Secret to store the database connection details.
 
-. Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Home > Projects* from the side menu and select your *{user-project-name}* from the list. This will display the *Project Details* screen.
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Choose *Home > Projects* from the side menu and select your *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
 . Choose *Workloads > Secrets* and click the *Create > Key/Value Secret* button on the *Secrets* screen.
-. Enter *pg-secrets* in the *Secret Name* field.
-. Create a key named *username* with a value of `{postgres-username}`.
+. Enter `pg-secrets` in the *Secret Name* field.
+. Create a key named `username` with a value of `{postgres-username}`.
 . Click *Add Key/Value* to create another key/value pair.
-. Enter the key name of *password* with a value of `{postgres-password}`.
+. Enter the key name of `password` with a value of `{postgres-password}`.
 . Click *Create*.
 
 [type=verification]
@@ -454,30 +466,62 @@ Now that you've created a *Secret* containing the database connection informatio
 
 The key/value pairs stored in the *Secret* can be associated with the *DeploymentConfig*, and exposed to the underlying application as *Environment Variables*.
 
-. Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Workloads > DeploymentConfigs* from the side menu and verify the selected Project is set to *{user-project-name}* using the dropdown.
-. Select the *{username}-traffic-api* item in the list. The *Deployment Config Details* screen is displayed.
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Choose *Workloads > DeploymentConfigs* from the side menu and verify the selected Project is set to *{walkthrough-namespace}* using the dropdown.
+. Select the *{dc-name}* item in the list. The *Deployment Config Details* screen is displayed.
 . Select *Environment* tab and click *Add from ConfigMap or Secret*.
 . In the new row, `PG_USERNAME` in the *name* field and select the *pg-secrets* resource and *username* key.
 . Click *Add from ConfigMap or Secret* again.
 . In the new row, `PG_PASSWORD` in the *name* field and select the *pg-secrets* resource and *password* key.
 . Click the *Save* button.
 
+{blank}
+
+This will cause a redeployment of the application *Pods*. You can verify this from *Workloads > Pods*.
+
 === Verify the Deployment
 
-. Login to the link:{openshift-console-url}[OpenShift Console].
-. Choose *Workloads > Pods* and verify the selected Project is set to *{user-project-name}* using the dropdown.
-. You should see a *Pod* named *{username}-traffic-api* followed by a number in the list. The *Status* of this Pod should be *Running*.
-. Choose *Networking > Routes* from the side menu and verify the selected Project is set to *{user-project-name}* using the dropdown.
-. A route named *{username}-traffic-api* should be listed in a table.
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Choose *Workloads > Pods* and verify the selected Project is set to *{walkthrough-namespace}* using the dropdown.
+. You should see a *Pod* named *{dc-name}* followed by a number and unique ID in the list, e.g *{dc-name}-2-ab21d*. The *Status* column for this Pod should state that it's *Running*.
+. Choose *Networking > Routes* from the side menu and verify the selected Project is set to *{walkthrough-namespace}* using the dropdown.
+. A route named *{dc-name}* should be listed in a table.
 . Click the URL listed under the *Location* to view the Swagger UI docs for your deployed Node.js API.
+. From the Swagger UI displayed in your browser expand the */meters* and click the *Try it out* button.
+. Optionally, choose a value from the *status* dropdown.
+. Click the blue *Execute* button to make a request to the API and verify that a JSON response is shown in the *Server response* section of the Swagger UI.
+
+You should see a JSON response similar to the sample below:
+
++
+[subs="attributes+"]
+----
+[
+  {
+    "status_text": "available",
+    "latitude": 34.0509,
+    "address": "301 S HILL ST",
+    "longitude": -118.25,
+    "meter_id": 1074,
+    "last_updated": "2020-03-20T21:40:12.000Z"
+  },
+  {
+    "status_text": "available",
+    "latitude": 34.0623,
+    "address": "10801 W WEYBURN AVE",
+    "longitude": -118.443,
+    "meter_id": 455,
+    "last_updated": "2020-03-20T21:38:42.000Z"
+  }
+]
+----
 
 [type=verification]
-Is a webpage with a Swagger UI and list of endpoints displayed in your web browser after opening the *Location* URL from the previous section?
+Are you able to execute queries and see JSON results in Swagger UI?
 
 [type=verificationFail]
 
-Verify that the *Pod* you checked as part of *Verify the Deployment* is in a *Running* state. If the URL does not display a Swagger UI after a few moments contact the lab administrator.
+Verify that the *Pod* you checked as part of *Verify the Deployment* is in a *Running* state. If the URL does not display a Swagger UI or the *Server response* is not in the correct JSON format please contact the lab administrator.
 
 [time=25]
 == API Protection using 3scale API Management
@@ -492,18 +536,17 @@ In order to secure the traffic and parking meter service that was built in the p
 . Creating a new Product and Backend
 . Creating an Application Plan
 . Creating an Application
-. Configuring the API
-
-{blank}
+. Configuring the API Settings
 
 
 === API Management Login
 
-TODO - 3scale 2.6 to 2.7 changes
-
-. Open the link:{api-management-url}[3scale Login screen, window="_blank"].
-. Click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
-. Dismiss the *How does 3Scale work?* option which is displayed the first time you log in to {3Scale-ProductName}. The main Dashboard is displayed.
+. Open the link:{api-management-url}[3scale Login screen, window="_blank"] and click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
+. Upon successful login enter your account details as:
+.. *Username*: `{user-username}`
+.. *Email*: `{user-username}@example.com`
+.. Enter your *First name* and *Last name* as desired
+. Dismiss the *OK,how does 3Scale work?* dialog using the *X* icon in the top right. The main Dashboard is displayed.
 
 {blank}
 
@@ -529,8 +572,9 @@ Verify that you followed each step in the procedure above. If you are still havi
 {blank}
 
 === Creating an Application Plan
-. Click *Applications > Application Plans* from the side navigation.
-. Click *Create Application Plan*.
+. Verify that *Product: {3scale-api-name}* is selected in the top navigation menu of {3Scale-ProductName}.
+. Select *Applications > Application Plans* from the side navigation.
+. Click *Create Application Plan* on the right side of the screen.
 . Enter the following for *Name* and *System name*:
 +
 [subs="attributes+"]
@@ -539,7 +583,7 @@ Verify that you followed each step in the procedure above. If you are still havi
 ----
 . Leave the other fields with their default values.
 . Select *Create Application Plan*. You will be redirected to the *Application Plans* screen.
-. Select the *Publish* button, beside your plan list item, to publish the Plan.
+. Select the *Publish* link, beside your plan list item, to publish the Plan.
 
 {blank}
 
@@ -556,43 +600,54 @@ Verify that you followed each step in the procedure above. If you are still havi
 {3scale-app-name}
 ----
 . Click *Create Application*.
-. Set a custom *User Key* for the application:
-.. On the *{3scale-app-name}* application screen you were redirected to, scroll to the *API Credentials* section.
-.. Click the green pencil icon beside the *API User Key*
-.. In the *Set Custom User Key* modal dialog, enter:
+
+=== Creating a Backend
+
+. Verify that *Dashboard* is selected in the top navigation menu of {3Scale-ProductName}.
+. Select *Backends* from the *APIs* section.
+. Click the *New Backend* link.
+. Enter `{3scale-backend-name}` in the *Name* and *System name* fields.
+. In the *Private endpoint* field enter `http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.local:8080`.
 +
-[subs="attributes+"]
+NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it.
+. Click *Create Backend*.
+. Verify that *Backend: {3scale-backend-name}* is selected in the top navigation menu of {3Scale-ProductName}.
+. Select *Mapping Rules* from the side navigation.
+. Click *Add Mapping Rule* on the *Mapping Rules* screen to create a mapping rule:
+.. Select *GET* for the *Verb*.
+.. Enter */meters* in the *Pattern* field.
+.. Leave the other fields with their default values.
+.. Click *Create Mapping* rule.
+. Create another *Mapping Rule* for `GET /junctions` following the same steps as you did for `GET /meters`.
+
+=== Configure, Deploy, and Verify the API
+
+In this section you'll see how the resources created in previous sections are utilised to access the API.
+
+. Verify that *Product: {3scale-api-name}* is selected in the top navigation menu of {3Scale-ProductName}.
+. Select *Integration > Settings*:
+.. In the *Staging Public Base URL* field enter `{3scale-staging-api-host}`.
+.. Under the *Credentials Location* section choose `As HTTP Headers`.
+.. Scroll down and click the *Update Product* button.
+. Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration* :
+. In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
+. Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
+. The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
+. Use the *Example curl for testing* to retrieve available meters via cURL or you're preferred HTTP client, e.g:
++
+[subs="attributes+"]/
 ----
-{3scale-api-key}
+curl "{3scale-staging-api-host}/meters?status=available&user_key=4b7708e722733fe0e6b355a7dfd1f777"
 ----
-.. Click *Set Custom Key*.
-
-{blank}
-
-=== Configuring the API
-
-. Click *Integration > Configuration* from the side navigation.
-. Click the *add a Backend and promote the configuration.* button.
-. Click the *Create a Backend that can be used by any Product* link:
-.. Enter *{3scale-backend-name}* in the *Name* and *System name* fields.
-.. In the *Private endpoint* field enter `http://{user-username}-traffic-api.{user-project-name}.svc.cluster.local:8080`.
-. Leave the *Staging Public Base URL* with it's default value.
-. Click *Update & test in Staging Environment* to save your work.
-
-{blank}
-
-[type=verification]
-Do you get a green line down the left had side of the main body of the window - between *API => API Gateway => Client*?
-Do you also see a message at the bottom of the screen as follows: *onnection between client, gateway & API is working correctly as reflected in the analytics section.*
-
-[type=verificationFail]
-Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
 
 [time=15]
-== Front end visualisation using React and Patternfly 4
+== Frontend visualisation using React and Patternfly 4
 
-In this section you will deploy a UI we've prepared using Patternfly's React components to create a web application to display the latest parking meter and junction traffic information.
-PatternFly is an open source design system created to enable consistency and usability across a wide range of applications and use cases.
+In this section you will deploy a web UI that displays the latest parking meter and junction traffic information by retrieving it from the {3Scale-ProductName} API. The UI is created using PatternFly, an open source design system created to enable consistency and usability across a wide range of applications and use cases.
+
+Deployment of the UI requires customisation to account for your specific {3Scale-ProductName} API Key and Staging URL. This means you'll be creating a *Build Config* that will use the source-to-image (s2i) strategy to create a container image via a *Build* - your API Key and Staging URL will be injected into the *Build*.
+
+Once the UI is deployed it will provide two primary pages; Parking Meters and Traffic Junctions.
 
 The Parking Meters page will:
 
@@ -610,21 +665,156 @@ The Traffic Junctions page will:
 
 {empty} +
 
-The end result will look similar to the images below. Here's an example of the
-Parking Meters being displayed:
+=== Create an Image Stream
 
-{empty} +
+To start, you need an *Image Stream*. This will store and allow you to reference the container images output by your *Build*.
 
-image::images/ui-parking-meters.png[role="integr8ly-img-responsive"]
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
+. Select *Builds > Image Streams* and click the *Create Image Stream* button.
+. Modify the *metadata.name* in the YAML to read `{is-name}`.
+. Click *Create*.
 
-{empty} +
+=== Create a Build Config in OpenShift
 
-And here's the traffic heatmap built using the junction data
+In this section you will create a *Build Config* that uses the s2i (source-to-image) strategy to package source code from a Git repository into a container image.
 
-{empty} +
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
+. Select *Builds > Build Configs* and click the *Create Build Config* button.
+. Delete sample YAML and copy and paste the YAML below in its place.
++
+[subs="attributes+"]/
+----
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: {is-name}
+  namespace: evals01-summit-035a
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: '{is-name}:latest'
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'nodejs:10'
+      env:
+        - name: API_KEY
+          value: "3SCALE_API_KEY"
+        - name: API_URL
+          value: "3SCALE_STAGING_URL"
+        - name: MAPS_API_KEY
+          value: "ASK_YOUR_LAB_ADMIN"
+  source:
+    git:
+      uri: 'https://github.com/evanshortiss/summit-2020-rhmi-lab'
+      ref: master
+    contextDir: solutions/traffic-application-frontend
+  triggers:
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+----
+. Replace the `3SCALE_API_KEY` and `3SCALE_STAGING_URL` with values from the *Example curl for testing* item in the previous section {3Scale-ProductName}.
+. The lab instructor(s) will provide a value for the `MAPS_API_KEY`.
+. Take note of the following highlights in the YAML:
+.. It contains an *output* section that instructs the resulting *Build* to write the image to the previously created *Image Stream*.
+.. Specifies a Git repo *uri* and *ref* to use as source code inputs, and specifies the *contextDir* that contains the specific code to build.
+.. Provides environment variables via the *env* section that are required for a successful build output for our specific application.
+. Click *Create* to create the Build Config.
+. Navigate to *Builds > Builds* to see that a *Build* is already running based on the Build Config.
+. Click the Build and take a look at the *Logs* tab to see it's progress. The build can take a few minutes to complete. It will be marked *Complete* on the *Builds* screen once the image has been generated.
 
-image::images/ui-traffic-heatmap.png[role="integr8ly-img-responsive"]
+=== Deploy the Frontend Build
 
-=== Deploying the ui
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
+. Select *Workloads > Deployments* and click the *Create Deployment* button.
+. Copy and paste the following YAML into the textarea:
++
+[subs="attributes+"]/
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {is-name}
+  namespace: {walkthrough-namespace}
+spec:
+  selector:
+    matchLabels:
+      app: {is-name}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {is-name}
+    spec:
+      containers:
+        - name: {is-name}
+          image: image-registry.openshift-image-registry.svc:5000/{walkthrough-namespace}/{is-name}
+          ports:
+            - containerPort: 8080
+----
+. Click *Create*. This will deploy the container image created by the Build in the previous section.
+. Next, a *Service* needs to be created to facilitate routing traffic to the container:
+.. Select *Networking > Services* .
+.. Click the *Create Service* button.
++
+[subs="attributes+"]/
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {is-name}
+  namespace: evals01-summit-035a
+  labels:
+    app: {is-name}
+spec:
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: {is-name}
+----
+. Lastly, a *Route* is required to support ingress of public traffic to the application *Service*:
+.. Select *Networking > Routes*.
+.. Click the *Create Route* button.
+.. Enter `{is-name}` in the *Name* field.
+.. Enter `{user-username}-{is-name}.{openshift-app-host}` in the *Hostname* field.
+.. Leave *Path* at the default value.
+.. Select the `{is-name}` from the *Service* dropdown.
+.. Select the `8080` from the *Target Port* dropdown.
+.. Check the *Secure route* checkbox.
+.. Select `Edge` as the *TLS Termination* option.
+.. For *Insecure Traffic* choose `Redirect`.
+.. Scroll down and click *Create*.
 
-TODO - Instructions for deployment of *solutions/traffic-application-frontend*
+=== Using the Application
+
+Now it's time to see everything come together.
+
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
+. To view the application UI, select *Networking > Routes* and click the URL in the *Location* column for the *{is-name}* item.
+. Take a look at the *Traffic Map* and *Parking Map* pages to see live traffic and parking meter status information displayed on a map.
+
+[type=verification]
+Is the *Traffic Heatmap* page displayed? It should be showing a map with clusters showing traffic hot spots.
+
+[type=verificationFail]
+Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
+
+Congratulations, in this lab you've:
+
+. Created Connections and an Integration in Red Hat Fuse Online to consume IoT data from AMQ Streams (Kafka).
+. Become familiar with Red Hat API Designer and used it to explore the API definition for this lab's backend.
+. Deployed a container image and integrated it with a Postgres database using OpenShift APIs.
+. Created a Product, Backend, Application, and Application Plan in {3Scale-ProductName} then promoted your API to a Staging Environment for .
+. Created an OpenShift ImageStream, Build Config, Deployment, Service, and Route to make the frontend application available.
