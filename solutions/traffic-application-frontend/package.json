@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prebuild": "yarn clean",
+    "prebuild": "npm run clean",
     "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "start": "node server.js",
     "start:dev": "webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
