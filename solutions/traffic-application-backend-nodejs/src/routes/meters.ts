@@ -14,6 +14,7 @@ const validator = createValidator();
 const metersRoute = express.Router();
 
 const allMetersQuerySchema = Joi.object({
+  user_key: Joi.string(),
   status: Joi.string().valid(
     'available',
     'out-of-service',
@@ -22,6 +23,7 @@ const allMetersQuerySchema = Joi.object({
   )
 });
 const singleMeterQuerySchema = Joi.object({
+  user_key: Joi.string(),
   meterId: Joi.number()
     .integer()
     .required()
