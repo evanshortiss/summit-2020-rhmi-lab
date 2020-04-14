@@ -113,6 +113,51 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 
 :sectnums:
 
+[time=10]
+== API Definition using Red Hat API Designer
+
+Red Hat API Designer is a tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
+The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
+
+When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
+An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
+For more information on the *OpenAPI Specification* see the link:{oas3-url}[Open API Specification, window="_blank"] on GitHub
+
+In this section we will use the Red Hat API designer to explore a pre-built an OpenAPI Specification which is used in the implementation of our API Server.
+The APIs created will combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being ingested from AMQ Streams.
+
+=== Viewing an Open API Spec
+
+. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
+. Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
+. Open the link:{apicurio-url}[Red Hat API Designer Dashboard, window="_blank"] and click the *OpenAPI* button.
+. When prompted to choose a file select the JSON file you just unzipped.
+
+[type=verification]
+Did the Red Hat API Designer UI render the OpenAPI Spec using the file you uploaded?
+
+[type=verificationFail]
+Verify that you selected the correct JSON file. If the OpenAPI Spec fails to render in Red Hat API Designer please contact the lab administrator.
+
+=== View API Data Types
+
+This API contains two primary data types, the *Junction* and *Meter*. Here's how you can view their properties using Red Hat API Designer.
+
+. On the left-hand side of the Red Hat API Designer UI you should see a *Data Types* section after the OpenAPI Spec JSON was loaded.
+. Choose the *Junction* item under the *Data Types* heading. Information and properties of a *Junction* are now displayed on the right of the Red Hat API Designer UI.
+. Select the *Source* tab at the top of the right-hand pane to view the data that represents a *Junction* type in this OpenAPI Spec.
+. Click the *As JSON* button on the right to toggle between JSON and YAML representations of the OpenAPI spec.
+. Choose the *Meter* item under the *Data Types* heading.
+. Note that the *Meter* has fewer properties than the *Junction*, but it utilises an *Enum* type to specify valid states that a Meter can be in.
+
+=== API Paths
+
+. Lastly, click each of four entries listed under the *Paths* heading and note that each path only supports *GET* requests since this going to be a readonly API.
+. Two of the endpoints support a path parameter as denoted by the placeholder brackets - `{}`, for example `/meters/32` would return information for a meter with the ID of `32`.
+. Note that the `/meters` meters endpoint supports a query parameter named `status` that can be set to one of four values defined by an *Enum* type.
+
+Once you're happy that you understand the API endpoints and parameters continue to the next section.
+
 [time=20]
 == Data Ingestion from AMQ Streams to Postgres using Fuse Online
 
@@ -226,7 +271,7 @@ Verify that you followed each step in the procedure above.  If you are still hav
 
 . When prompted to *Choose an Action*, select *Subscribe*.
 
-. When prompted to select a *Topic Name*, select *{streams-junction-topic-name}*:
+. When prompted to select a *Topic Name*, select *{streams-junction-topic-name}*.
 
 . When prompted to *Specify Output Data Type*:
 .. Select *JSON Schema* as the type.
@@ -357,52 +402,6 @@ Is the integration displayed as *Integrations* screen of the link:{fuse-url}/int
 * https://access.redhat.com/documentation/en-us/red_hat_fuse/{fuse-version}/html-single/integrating_applications_with_fuse_online/creating-integrations_ug#creating-integrations_ug[Creating integrations, window="_blank"]
 ****
 
-
-[time=10]
-== API Definition using Red Hat API Designer
-
-Red Hat API Designer is a tool that provides the ability to create *OpenAPI Specification* compatible API definitions.
-The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
-
-When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
-An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
-For more information on the *OpenAPI Specification* see the link:{oas3-url}[Open API Specification, window="_blank"] on GitHub
-
-In this section we will use the Red Hat API designer to explore a pre-built an OpenAPI Specification which is used in the implementation of our API Server.
-The APIs created will combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being ingested from AMQ Streams.
-
-=== Viewing an Open API Spec
-
-. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
-. Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
-. Open the link:{apicurio-url}[Red Hat API Designer Dashboard, window="_blank"] and click the *OpenAPI* button.
-. When prompted to choose a file select the JSON file you just unzipped.
-
-[type=verification]
-Did the Red Hat API Designer UI render the OpenAPI Spec using the file you uploaded?
-
-[type=verificationFail]
-Verify that you selected the correct JSON file. If the OpenAPI Spec fails to render in Red Hat API Designer please contact the lab administrator.
-
-=== View API Data Types
-
-This API contains two primary data types, the *Junction* and *Meter*. Here's how you can view their properties using Red Hat API Designer.
-
-. On the left-hand side of the Red Hat API Designer UI you should see a *Data Types* section after the OpenAPI Spec JSON was loaded.
-. Choose the *Junction* item under the *Data Types* heading. Information and properties of a *Junction* are now displayed on the right of the Red Hat API Designer UI.
-. Select the *Source* tab at the top of the right-hand pane to view the data that represents a *Junction* type in this OpenAPI Spec.
-. Click the *As JSON* button on the right to toggle between JSON and YAML representations of the OpenAPI spec.
-. Choose the *Meter* item under the *Data Types* heading.
-. Note that the *Meter* has fewer properties than the *Junction*, but it utilises an *Enum* type to specify valid states that a Meter can be in.
-
-=== API Paths
-
-. Lastly, click each of four entries listed under the *Paths* heading and note that each path only supports *GET* requests since this going to be a readonly API.
-. Two of the endpoints support a path parameter as denoted by the placeholder brackets - `{}`, for example `/meters/32` would return information for a meter with the ID of `32`.
-. Note that the `/meters` meters endpoint supports a query parameter named `status` that can be set to one of four values defined by an *Enum* type.
-
-Once you're happy that you understand the API endpoints and parameters continue to the next section.
-
 [time=15]
 == Deployment of the API Implementation
 In this section you'll deploy a pre-built implementation of the OpenAPI Specification you explored in the previous section.
@@ -433,7 +432,6 @@ A *DeploymentConfig* is an OpenShift API Object that defines the state and deplo
 . On the *Deploy Image* screen enter the following:
 .. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend` and click the search icon to display the container image details.
 .. Leave the *Name* and *Application Name* fields at their default values.
-.. Under the *Resources* section choose *DeploymentConfig* if prompted.
 .. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
 . Finally, click *Create* to deploy the container image.
 
@@ -527,16 +525,20 @@ Verify that the *Pod* you checked as part of *Verify the Deployment* is in a *Ru
 == API Protection using 3scale API Management
 
 In 3scale, we will be dealing with the following constructs:
-. A *Product* defines the developer/consumer facing end service you wish to make available for consumption.
-. A *Backend* defines the backend service(s) you wish to protect and make available via a *Product*.
-. An *Applications* define the credentials (e.g. API Key) to access your API. Applications are stored within *Developer Accounts*.
-. An *Application Plan* determines the access policies and is always associated with one *Application*.
+
+* A *Product* defines the developer/consumer facing end service you wish to make available for consumption.
+* A *Backend* defines the backend service(s) you wish to protect and make available via a *Product*.
+* An *Applications* define the credentials (e.g. API Key) to access your API. Applications are stored within *Developer Accounts*.
+* An *Application Plan* determines the access policies and is always associated with one *Application*.
+
+{blank}
 
 In order to secure the traffic and parking meter service that was built in the previous section, we will be performing the following activities in 3scale:
-. Creating a new Product and Backend
-. Creating an Application Plan
-. Creating an Application
-. Configuring the API Settings
+
+* Creating a new Product and Backend
+* Creating an Application Plan
+* Creating an Application
+* Configuring the API Settings
 
 
 === API Management Login
@@ -546,7 +548,7 @@ In order to secure the traffic and parking meter service that was built in the p
 .. *Username*: `{user-username}`
 .. *Email*: `{user-username}@example.com`
 .. Enter your *First name* and *Last name* as desired
-. Dismiss the *OK,how does 3Scale work?* dialog using the *X* icon in the top right. The main Dashboard is displayed.
+. The main Dashboard should be displayed.
 
 {blank}
 
@@ -606,8 +608,19 @@ Verify that you followed each step in the procedure above. If you are still havi
 . Verify that *Dashboard* is selected in the top navigation menu of {3Scale-ProductName}.
 . Select *Backends* from the *APIs* section.
 . Click the *New Backend* link.
-. Enter `{3scale-backend-name}` in the *Name* and *System name* fields.
-. In the *Private endpoint* field enter `http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.local:8080`.
+. Enter following in the *Name* and *System name* fields:
++
+[subs="attributes+"]
+----
+{3scale-backend-name}
+----
+. In the *Private endpoint* field, enter the following URL:
++
+[subs="attributes+"]
+----
+http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.local:8080
+----
+{blank}
 +
 NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it.
 . Click *Create Backend*.
@@ -624,18 +637,17 @@ NOTE: This is a private URL that is not accessible on public networks. Only othe
 
 In this section you'll see how the resources created in previous sections are utilised to access the API.
 
-. Verify that *Product: {3scale-api-name}* is selected in the top navigation menu of {3Scale-ProductName}.
+. Ensure that the *{3scale-api-name}* Product is selected in the top navigation menu of {3Scale-ProductName}.
 . Select *Integration > Settings*:
 .. In the *Staging Public Base URL* field enter `{3scale-staging-api-host}`.
-.. Under the *Credentials Location* section choose `As HTTP Headers`.
 .. Scroll down and click the *Update Product* button.
 . Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration* :
 . In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
 . Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
 . The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
-. Use the *Example curl for testing* to retrieve available meters via cURL or you're preferred HTTP client, e.g:
+. Use the *Example curl for testing* to retrieve available meters via cURL or your preferred HTTP client, e.g:
 +
-[subs="attributes+"]/
+[subs="attributes+"]
 ----
 curl "{3scale-staging-api-host}/meters?status=available&user_key=4b7708e722733fe0e6b355a7dfd1f777"
 ----
@@ -684,13 +696,13 @@ In this section you will create a *Build Config* that uses the s2i (source-to-im
 . Select *Builds > Build Configs* and click the *Create Build Config* button.
 . Delete sample YAML and copy and paste the YAML below in its place.
 +
-[subs="attributes+"]/
+[subs="attributes+"]
 ----
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   name: {is-name}
-  namespace: evals01-summit-035a
+  namespace: {walkthrough-namespace}
 spec:
   output:
     to:
@@ -720,6 +732,7 @@ spec:
       imageChange: {}
     - type: ConfigChange
 ----
++
 . Replace the `3SCALE_API_KEY` and `3SCALE_STAGING_URL` with values from the *Example curl for testing* item in the previous section {3Scale-ProductName}.
 . The lab instructor(s) will provide a value for the `MAPS_API_KEY`.
 . Take note of the following highlights in the YAML:
@@ -737,7 +750,7 @@ spec:
 . Select *Workloads > Deployments* and click the *Create Deployment* button.
 . Copy and paste the following YAML into the textarea:
 +
-[subs="attributes+"]/
+[subs="attributes+"]
 ----
 apiVersion: apps/v1
 kind: Deployment
@@ -765,13 +778,13 @@ spec:
 .. Select *Networking > Services* .
 .. Click the *Create Service* button.
 +
-[subs="attributes+"]/
+[subs="attributes+"]
 ----
 apiVersion: v1
 kind: Service
 metadata:
   name: {is-name}
-  namespace: evals01-summit-035a
+  namespace: {walkthrough-namespace}
   labels:
     app: {is-name}
 spec:
