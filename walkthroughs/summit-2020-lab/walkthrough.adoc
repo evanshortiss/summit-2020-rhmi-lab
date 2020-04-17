@@ -4,6 +4,7 @@
 :kafka-broker-uri: iot-cluster-kafka-brokers.{la-project-name}.svc.cluster.local:9092
 :fuse-streams-connection-name: {user-username} AMQ Streams Message Broker
 :fuse-database-connection-name: {user-username} Postgres
+:fuse-url: https://syndesis-{user-username}-fuse.{openshift-app-host}
 :streams-junction-topic-name: junctions
 :streams-meter-topic-name: meters
 :streams-junction-data-integration: {user-username} IoT Junction Data Ingestion
