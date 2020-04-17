@@ -628,7 +628,7 @@ http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.l
 ----
 {blank}
 +
-NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it.
+NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it. You can see that it's name is derived from the *Service* created under *Networking > Services* in your project and the name of the *Project* itself. It also uses port 8080 since this is the port the container exposes the API on.
 . Click *Create Backend*.
 . Verify that *Backend: {3scale-backend-name}* is selected in the top navigation menu of {3Scale-ProductName}.
 . Select *Mapping Rules* from the side navigation.
@@ -655,8 +655,14 @@ In this section you'll see how the resources created in previous sections are ut
 +
 [subs="attributes+"]
 ----
-curl "{3scale-staging-api-host}/meters?status=available&user_key=4b7708e722733fe0e6b355a7dfd1f777"
+curl "{3scale-staging-api-host}/meters?status=available&user_key=YOUR_KEY_HERE"
 ----
+
+[type=verification]
+Were you able to query the API via {3Scale-ProductName} and retrieve a list of available meters?
+
+[type=verificationFail]
+Ensure that the API Key (`user_key`) is defined in the sample Staging cURL command and that you entered the correct URL in the Backend configuration. Contact the lab administrator if the issue persists.
 
 [time=15]
 == Frontend visualisation using React and Patternfly 4
@@ -683,137 +689,67 @@ The Traffic Junctions page will:
 
 {empty} +
 
-=== Create an Image Stream
+=== Create a Build from Git
 
-To start, you need an *Image Stream*. This will store and allow you to reference the container images output by your *Build*.
-
-. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
-. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
-. Select *Builds > Image Streams* and click the *Create Image Stream* button.
-. Modify the *metadata.name* in the YAML to read `{is-name}`.
-. Click *Create*.
-
-=== Create a Build Config in OpenShift
-
-In this section you will create a *Build Config* that uses the s2i (source-to-image) strategy to package source code from a Git repository into a container image.
+The frontend code is stored in a Git repository. In this section you'll create a s2i (source-to-image) *Build* that will turn that code into a container image. It will also create the necessary OpenShift API Objects such as *Image Streams*, a *Build Config* and *DeploymentConfig* for you.
 
 . Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
-. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
-. Select *Builds > Build Configs* and click the *Create Build Config* button.
-. Delete sample YAML and copy and paste the YAML below in its place.
-+
-[subs="attributes+"]
-----
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
-metadata:
-  name: {is-name}
-  namespace: {walkthrough-namespace}
-spec:
-  output:
-    to:
-      kind: ImageStreamTag
-      name: '{is-name}:latest'
-  strategy:
-    type: Source
-    sourceStrategy:
-      from:
-        kind: ImageStreamTag
-        namespace: openshift
-        name: 'nodejs:10'
-      env:
-        - name: API_KEY
-          value: "3SCALE_API_KEY"
-        - name: API_URL
-          value: "3SCALE_STAGING_URL"
-        - name: MAPS_API_KEY
-          value: "ASK_YOUR_LAB_ADMIN"
-  source:
-    git:
-      uri: 'https://github.com/evanshortiss/summit-2020-rhmi-lab'
-      ref: master
-    contextDir: solutions/traffic-application-frontend
-  triggers:
-    - type: ImageChange
-      imageChange: {}
-    - type: ConfigChange
-----
-+
-. Replace the `3SCALE_API_KEY` and `3SCALE_STAGING_URL` with values from the *Example curl for testing* item in the previous section {3Scale-ProductName}.
-. The lab instructor(s) will provide a value for the `MAPS_API_KEY`.
-. Take note of the following highlights in the YAML:
-.. It contains an *output* section that instructs the resulting *Build* to write the image to the previously created *Image Stream*.
-.. Specifies a Git repo *uri* and *ref* to use as source code inputs, and specifies the *contextDir* that contains the specific code to build.
-.. Provides environment variables via the *env* section that are required for a successful build output for our specific application.
-. Click *Create* to create the Build Config.
-. Navigate to *Builds > Builds* to see that a *Build* is already running based on the Build Config.
-. Click the Build and take a look at the *Logs* tab to see it's progress. The build can take a few minutes to complete. It will be marked *Complete* on the *Builds* screen once the image has been generated.
+. Select the *Developer* view using the dropdown underneath the Red Hat OpenShift logo.
+. Select the *{walkthrough-namespace}* from the *Project* dropdown to the right of where you chose the developer view.
+. From the left-side menu select *Add*.
+. In the main content area a list of options should be presented. Choose the *From Git* option.
+. An *Import from Git* wizard is displayed. Enter the following in *Git Repo URL*: `https://github.com/evanshortiss/rhmi-enablement-2020-lab`.
+. Expand the *Advanced Git Options* section and enter `/solutions/traffic-application-frontend` in the *Context Dir*.
+. The *Node.js* option under *Builder Image* should been selected automatically, but if it's not select it now.
+. Select verion 10 under the *Builder Image Version* dropdown.
+. In the *General* section:
+.. Click the *Application* dropdown and select `Create Application`.
+.. Enter `{is-name}-app` for *Application Name* and `{is-name}` for *Name*.
+. Select *DeploymentConfig* under the *Resources* section.
+. Ensure that *Create a route to the application* is checked.
+. Click the *Build Configuration* link and create the following *Environment Variables*:
+.. `API_URL` with the value of your 3scale Staging API URL.
+.. `API_KEY` with the value of your 3scale Staging API Key.
+.. `MAPS_API_KEY` with a value provided by the lab administrator, or your own Google Maps API Key.
+. Click the *Routing* link:
+.. Leave *Hostname* and *Path* at the default values.
+.. Set *Target Port*  `8080`.
+.. Ensure *Secure Route* is checked.
+.. Set *TLS Termination* to `Edge`.
+.. Set *Insecure Traffic* to `Redirect`.
+. Scroll down and click *Create*.
 
-=== Deploy the Frontend Build
+=== Monitor the Build
 
 . Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
-. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
-. Select *Workloads > Deployments* and click the *Create Deployment* button.
-. Copy and paste the following YAML into the textarea:
-+
-[subs="attributes+"]
-----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {is-name}
-  namespace: {walkthrough-namespace}
-spec:
-  selector:
-    matchLabels:
-      app: {is-name}
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: {is-name}
-    spec:
-      containers:
-        - name: {is-name}
-          image: image-registry.openshift-image-registry.svc:5000/{walkthrough-namespace}/{is-name}
-          ports:
-            - containerPort: 8080
-----
-. Click *Create*. This will deploy the container image created by the Build in the previous section.
-. Next, a *Service* needs to be created to facilitate routing traffic to the container:
-.. Select *Networking > Services* .
-.. Click the *Create Service* button.
-+
-[subs="attributes+"]
-----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {is-name}
-  namespace: {walkthrough-namespace}
-  labels:
-    app: {is-name}
-spec:
-  ports:
-    - name: 8080-tcp
-      protocol: TCP
-      port: 8080
-      targetPort: 8080
-  selector:
-    app: {is-name}
-----
-. Lastly, a *Route* is required to support ingress of public traffic to the application *Service*:
-.. Select *Networking > Routes*.
-.. Click the *Create Route* button.
-.. Enter `{is-name}` in the *Name* field.
-.. Enter `{user-username}-{is-name}.{openshift-app-host}` in the *Hostname* field.
-.. Leave *Path* at the default value.
-.. Select the `{is-name}` from the *Service* dropdown.
-.. Select the `8080` from the *Target Port* dropdown.
-.. Check the *Secure route* checkbox.
-.. Select `Edge` as the *TLS Termination* option.
-.. For *Insecure Traffic* choose `Redirect`.
-.. Scroll down and click *Create*.
+. The view defaults to *Administrator* mode. Toggle the *Developer* view using the dropdown underneath the Red Hat OpenShift logo.
+. Select the *{walkthrough-namespace}* from the *Project* dropdown to the right of where you chose the developer view.
+. Choose *Builds* on the left menu.
+. Select the *traffic-frontend* build and navigate to the *Builds* tab.
+. Select the *traffic-frontend-1* build and then the *Logs* tab.
+
+[type=verification]
+Do the logs show a successful git clone and eventually end with `Push successful` message? If you select the *Topology* view from the side menu is the `traffic-frontend` Node.js application listed? If you click the `traffic-frontend` a panel appears on the right - does the panel display a *Pod* with status set to *Running*?
+
+[type=verificationFail]
+Verify that you set the *Environment Variables* and *Git* settings for the *Build* correctly, and start the build again. Contact the administrator if the issue persists.
+
+=== Using the Application
+
+Now that the *Build* is complete it's time to see everything working together.
+
+. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
+. Select the *Developer* view using the dropdown underneath the Red Hat OpenShift logo.
+. Select the *{walkthrough-namespace}* from the *Project* dropdown to the right of where you chose the developer view.
+. Choose the *Topology* view on from the left-side menu and click the *traffic-frontend* item.
+. In the pane on the right click the URL under the *Routes* section.
+. Take a look at the *Traffic Map* and *Parking Map* pages to see live traffic and parking meter status information displayed on a map.
+
+[type=verification]
+Is the *Traffic Heatmap* page displayed? It should be showing a map with clusters showing traffic hot spots.
+
+[type=verificationFail]
+Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
 
 === Using the Application
 
