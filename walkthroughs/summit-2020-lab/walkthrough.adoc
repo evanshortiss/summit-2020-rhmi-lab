@@ -4,7 +4,7 @@
 :kafka-broker-uri: iot-cluster-kafka-brokers.{la-project-name}.svc.cluster.local:9092
 :fuse-streams-connection-name: {user-username} AMQ Streams Message Broker
 :fuse-database-connection-name: {user-username} Postgres
-:fuse-url: https://syndesis-{user-username}-fuse.{openshift-app-host}
+:fuse-evals-url: https://syndesis-{user-username}-fuse.{openshift-app-host}
 :streams-junction-topic-name: junctions
 :streams-meter-topic-name: meters
 :streams-junction-data-integration: {user-username} IoT Junction Data Ingestion
@@ -85,7 +85,7 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 [type=walkthroughResource,serviceName=fuse-managed]
 .Fuse Online
 ****
-* link:{fuse-url}[Console, window="_blank"]
+* link:{fuse-evals-url}[Console, window="_blank"]
 * link:https://access.redhat.com/documentation/en-us/red_hat_fuse/7.4/html/integrating_applications_with_fuse_online/index[Documentation, window="_blank"]
 * link:https://www.redhat.com/en/technologies/jboss-middleware/fuse-online[Overview, window="_blank"]
 ****
@@ -170,7 +170,7 @@ We will then create an *Integration* that uses these two connections and transla
 
 In this step you will create a *Connection* that will enable your *Integration* to connect to a pre-existing AMQ Streams Broker.
 
-. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console. Accept the permissions requests if prompted.
+. Log in to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] console. Accept the permissions requests if prompted.
 
 . Select *Connections* from the left hand menu.
 
@@ -200,7 +200,7 @@ In this step you will create a *Connection* that will enable your *Integration* 
 
 
 [type=verification]
-Is a connection named *{fuse-streams-connection-name}* displayed on the *Connections* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-4"] console?
+Is a connection named *{fuse-streams-connection-name}* displayed on the *Connections* screen of the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank", id="{context}-4"] console?
 
 [type=verificationFail]
 Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
@@ -210,7 +210,7 @@ Verify that you followed each step in the procedure above.  If you are still hav
 
 To allow Fuse Online to write data consumed from AMQ Streams to Postgres, we need to create a new Database connection in Red Hat Fuse Online.
 
-. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+. Log in to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] console.
 
 . Select *Connections* from the left hand menu.
 
@@ -254,7 +254,7 @@ To allow Fuse Online to write data consumed from AMQ Streams to Postgres, we nee
 
 
 [type=verification]
-Is the new Postgres connection displayed on the *Connections* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-6"] console?
+Is the new Postgres connection displayed on the *Connections* screen of the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank", id="{context}-6"] console?
 
 [type=verificationFail]
 Verify that you followed each step in the procedure above.  If you are still having issues, contact your administrator.
@@ -262,7 +262,7 @@ Verify that you followed each step in the procedure above.  If you are still hav
 
 === Creating the Integration between AMQ Streams and Postgres for traffic data
 
-. Log in to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] console.
+. Log in to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] console.
 
 . Select *Integrations* from the left hand menu.
 
@@ -336,12 +336,12 @@ VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 . The *Integration Summary* dashboard will show your *Integration* is being built into a container image that will be deployed on the OpenShift cluster.
 
 [type=verification]
-Is the integration displayed as *Building*, *Deploying*, or *Running* on the *Integration* screen of the link:{fuse-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
+Is the integration displayed as *Building*, *Deploying*, or *Running* on the *Integration* screen of the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank", id="{context}-1"] console?
 
 [type=verificationFail]
 
 ****
-. Navigate to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
+. Navigate to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
 
 . Verify that you followed each step in the procedure above. If you are still having issues, contact your administrator.
 ****
@@ -386,12 +386,12 @@ INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
 .. Enter *{streams-meter-data-integration}* as the Integration name then click *Save and Publish*.
 
 [type=verification]
-Is the integration displayed as *Integrations* screen of the link:{fuse-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
+Is the integration displayed as *Integrations* screen of the link:{fuse-evals-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
 
 [type=verificationFail]
 
 ****
-. Navigate to the link:{fuse-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
+. Navigate to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] Integrations screen. Verify the Integration is listed.
 
 . Verify that you followed each step in the procedure above. If you are still having issues, contact your administrator.
 ****
