@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1alpha1
+apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaTopic
 metadata:
   name: meters
@@ -6,4 +6,7 @@ metadata:
     strimzi.io/cluster: iot-cluster
 spec:
   partitions: 10
-  replicas: 2
+  replicas: 3
+  config:
+    retention.ms: 604800000
+    segment.bytes: 1073741824

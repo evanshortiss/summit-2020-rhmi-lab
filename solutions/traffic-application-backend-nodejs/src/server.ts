@@ -38,7 +38,7 @@ app.use(require('cors')());
 app.use(require('morgan')('combined'));
 
 // We're returning a large amount of JSON, so compress it
-app.use(require('compression')())
+app.use(require('compression')());
 
 // Redirect to the api-docs by default
 app.get('/', (req: express.Request, res: express.Response) => {
@@ -46,9 +46,9 @@ app.get('/', (req: express.Request, res: express.Response) => {
 });
 
 app.get('/openapi-spec.json', (req, res) => {
-  res.setHeader('content-type', 'application/swagger+json')
-  res.sendFile(resolve(__dirname, '../openapi-spec.json'))
-})
+  res.setHeader('content-type', 'application/swagger+json');
+  res.sendFile(resolve(__dirname, '../openapi-spec.json'));
+});
 
 // Setup an api-docs endpoint using swagger ui
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));

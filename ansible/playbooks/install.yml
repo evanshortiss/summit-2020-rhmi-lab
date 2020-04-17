@@ -1,6 +1,7 @@
 ---
 - import_playbook: ./requirements.yml
-- import_playbook: ./create-users.yml
+# Users are now created during cluster provision
+# - import_playbook: ./create-users.yml
 - import_playbook: ./project-setup.yml
 
 - hosts: localhost
