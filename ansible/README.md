@@ -31,6 +31,15 @@ ansible-playbook playbooks/install.yml \
 -e lab_user_count=75
 ```
 
+If you are already targeting the OpenShift cluster with `oc`, you can run:
+
+```bash
+ansible-playbook playbooks/install.yml \
+-e oc_login_token=$(oc whoami -t) \
+-e oc_login_server=$(oc get infrastructure cluster -o jsonpath='{.status.apiServerURL}') \
+-e lab_user_count=75
+```
+
 Once this has completed you can login as `evals01` thru `evals75` using the
 password `$USERNAME-password` where `$USERNAME` is `evals01` or similar, e.g
 `evals01-password`.
