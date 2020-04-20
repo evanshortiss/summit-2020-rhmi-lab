@@ -32,6 +32,7 @@
 :3scale-app-name: {3scale-base-name}-app
 :3scale-api-key: {3scale-base-name}-key
 :3scale-staging-api-host: https://{user-username}-traffic-api-staging.{openshift-app-host}:443
+:3scale-management-url: https://{user-username}-tenant-admin.{openshift-app-host}
 
 :is-name: traffic-frontend
 
@@ -99,7 +100,7 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 [type=walkthroughResource,serviceName=3scale]
 .3Scale
 ****
-* link:{api-management-url}[Console, window="_blank"]
+* link:{3scale-management-url}[Console, window="_blank"]
 * link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.7/[Documentation, window="_blank"]
 * link:https://www.redhat.com/en/technologies/jboss-middleware/3scale[Overview, window="_blank"]
 ****
@@ -549,7 +550,7 @@ Here's a quick overview of these terms:
 
 === API Management Login
 
-. Open the link:{api-management-url}[3scale Login screen, window="_blank"] and click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
+. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
 . Upon successful login enter your account details as:
 .. *Username*: `{user-username}`
 .. *Email*: `{user-username}@example.com`
