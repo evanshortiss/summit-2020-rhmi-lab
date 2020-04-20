@@ -3,6 +3,7 @@
 # Users are now created during cluster provision
 # - import_playbook: ./create-users.yml
 - import_playbook: ./project-setup.yml
+- import_playbook: ./create-tenants.yml
 
 - hosts: localhost
   gather_facts: no
