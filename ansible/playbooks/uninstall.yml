@@ -6,3 +6,8 @@
         name: requirements
     - include_role:
         name: uninstall
+    - include_role:
+        name: threescale
+      vars:
+        action: uninstall
+

@@ -1,6 +1,8 @@
 ---
 - name: Create backing project
   shell: oc new-project {{project_name}}
+  register: _action_create_project
+  failed_when: _action_create_project.rc != 0 and 'AlreadyExists' not in _action_create_project.stderr
 
 - name: Create AMQ Streams cluster
   shell: oc apply -f {{role_path}}/files/kafka.cluster.yml -n {{project_name}}
