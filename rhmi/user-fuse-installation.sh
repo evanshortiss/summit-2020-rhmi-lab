@@ -1,7 +1,7 @@
 NUM_USERS="${NUM_USERS:-10}"
 DEV_USERNAME="${DEV_USERNAME:-evals}"
 FUSE_NAMESPACE="${FUSE_NAMESPACE:-redhat-rhmi-fuse}"
-FUSE_OPERATOR_NAMESPACE="${FUSE_NAMESPACE:-redhat-rhmi-fuse-operator}"
+FUSE_OPERATOR_NAMESPACE="${FUSE_OPERATOR_NAMESPACE:-redhat-rhmi-fuse-operator}"
 
 NUM_FORMAT=${#NUM_USERS}
 if [ $NUM_FORMAT -eq 1 ]; then

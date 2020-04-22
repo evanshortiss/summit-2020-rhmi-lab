@@ -18,7 +18,9 @@ You also need:
 
 ## Deployment Instructions
 
-Run the command below in this folder to deploy the lab for 75 users. By default
+Modify the `redhat-rhmi-smtp` secret in the `redhat-rhmi-operator` namespace to use non-dummy smtp credentials. This is required for 3scale tenants to be setup correctly. 
+
+Next, run the command below in this folder to deploy the lab for 75 users. By default
 75 users will be deployed if `lab_user_count` is not specified.
 
 ```bash
