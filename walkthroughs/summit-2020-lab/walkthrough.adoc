@@ -275,8 +275,12 @@ Verify that you followed each step in the procedure above.  If you are still hav
 
 . When prompted to *Choose an Action*, select *Subscribe*.
 
-. When prompted to select a *Topic Name*, select *{streams-junction-topic-name}*.
-
+. When prompted for a *Topic Name*, enter:
++
+[subs="attributes+"]
+----
+{streams-junction-topic-name}
+----
 . When prompted to *Specify Output Data Type*:
 .. Select *JSON Schema* as the type.
 .. Enter the following in the *Definition* field:
@@ -550,11 +554,7 @@ Here's a quick overview of these terms:
 
 === API Management Login
 
-. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
-. Upon successful login enter your account details as:
-.. *Username*: `{user-username}`
-.. *Email*: `{user-username}@example.com`
-.. Enter your *First name* and *Last name* as desired
+. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and log in with your username and password. 
 . The main Dashboard should be displayed.
 
 {blank}
@@ -648,7 +648,7 @@ In this section you'll see how the resources created in previous sections are ut
 . Select *Integration > Settings*:
 .. In the *Staging Public Base URL* field enter `{3scale-staging-api-host}`.
 .. Scroll down and click the *Update Product* button.
-. Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration* :
+. Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration*.
 . In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
 . Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
 . The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
