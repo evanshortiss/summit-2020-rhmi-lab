@@ -65,6 +65,8 @@
   shell: oc get tenant {{ _tenant_id }} -n {{ namespace }} -o jsonpath='{.status.tenantId}'
   register: _action_get_resource
   until: _action_get_resource.rc == 0 and _action_get_resource.stdout != ''
+  retries: 60
+  delay: 5
 
 # details about the tenant are exported to a secret
 # get this secret and log the information in it

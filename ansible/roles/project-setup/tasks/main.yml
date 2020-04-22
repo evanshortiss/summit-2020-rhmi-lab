@@ -23,7 +23,7 @@
   shell: oc get pods -l name=postgresql -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' -n {{project_name}}
   register: result
   until: result.stdout == "true"
-  retries: 25
+  retries: 60
   delay: 5
   changed_when: False
 
