@@ -442,6 +442,7 @@ NOTE: You can pin the project to the top of the Project select list for easier f
 . On the *Deploy Image* screen enter the following:
 .. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend` and click the search icon to display the container image details.
 .. Leave the *Name* and *Application Name* fields at their default values.
+.. Select *DeploymentConfig* under the *Resources* section.
 .. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
 . Finally, click *Create* to deploy the container image.
 
