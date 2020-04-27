@@ -56,7 +56,8 @@ create_fuse_resources() {
   oc patch installplan $(oc get installplans -n $NAMESPACE | grep -v NAME | awk '{print $1}') -n $NAMESPACE --type='json' -p '[{"op": "replace", "path": "/spec/approved", "value": true}]'
 
   # Create the Syndesis CR
-  oc get syndesis integreatly -n redhat-rhmi-fuse -o yaml | sed "/namespace: redhat-rhmi-fuse/d;/annotations/,/applicationUrl/d;s/name: integreatly/name: $USERNAME/g;/status:/,/version:/d" | oc create -n $NAMESPACE -f -
+  # remove namespace, annotations, replace name to the dev username, ensures monitoring is disabled by setting ops to false
+  oc get syndesis integreatly -n redhat-rhmi-fuse -o yaml | sed "/namespace: redhat-rhmi-fuse/d;/annotations/,/applicationUrl/d;s/name: integreatly/name: $USERNAME/g;/status:/,/version:/d;/ops/,/todo/{s/enabled: \"true\"/enabled: \"false\"/g}" | oc create -n $NAMESPACE -f -
 }
 
 for ((i = 1; i <= NUM_USERS; i++)); do
