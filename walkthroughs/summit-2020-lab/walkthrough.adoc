@@ -130,7 +130,7 @@ The APIs created will combine data from the provided Lookup Tables in Postgres -
 
 === Viewing an Open API Spec
 
-. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
+. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/9c99312a5746c75d7988ebc0a1d8d6a94e721c5c.zip[this link].
 . Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
 . Open the link:{apicurio-url}[Red Hat API Designer Dashboard, window="_blank"] and click the *OpenAPI* button.
 . When prompted to choose a file select the JSON file you just unzipped.
