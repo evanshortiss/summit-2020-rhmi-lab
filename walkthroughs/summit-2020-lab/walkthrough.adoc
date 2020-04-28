@@ -215,7 +215,8 @@ To allow Fuse Online to write data consumed from AMQ Streams to Postgres, we nee
 . Log in to the link:{fuse-evals-url}[Red Hat Fuse Online, window="_blank"] console.
 
 . Select *Connections* from the left hand menu.
-
++
+NOTE: There is an existing Postgres connection included for example purposes. You can ignore this, or delete it using the dropdown menu accessed via the three dot icon.
 . Select the *Create Connection* button to start the *Create Connection* wizard.
 
 . Select *Database* to configure a *Postgres* connection.
@@ -657,6 +658,8 @@ In this section you'll see how the resources created in previous sections are ut
 ----
 curl "{3scale-staging-api-host}/meters?status=available&user_key=YOUR_KEY_HERE"
 ----
++
+NOTE: Make sure you append `/meters` to your cURL path otherwise you will be redirected to the `/api-docs` path.
 
 [type=verification]
 Were you able to query the API via {3Scale-ProductName} and retrieve a list of available meters?
