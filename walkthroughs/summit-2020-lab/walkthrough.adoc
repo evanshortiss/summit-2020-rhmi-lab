@@ -32,6 +32,7 @@
 :3scale-app-name: {3scale-base-name}-app
 :3scale-api-key: {3scale-base-name}-key
 :3scale-staging-api-host: https://{user-username}-traffic-api-staging.{openshift-app-host}:443
+:3scale-management-url: https://{user-username}-tenant-admin.{openshift-app-host}
 
 :is-name: traffic-frontend
 
@@ -99,7 +100,7 @@ image::images/arch.png[integration, role="integr8ly-img-responsive"]
 [type=walkthroughResource,serviceName=3scale]
 .3Scale
 ****
-* link:{api-management-url}[Console, window="_blank"]
+* link:{3scale-management-url}[Console, window="_blank"]
 * link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.7/[Documentation, window="_blank"]
 * link:https://www.redhat.com/en/technologies/jboss-middleware/3scale[Overview, window="_blank"]
 ****
@@ -129,7 +130,7 @@ The APIs created will combine data from the provided Lookup Tables in Postgres -
 
 === Viewing an Open API Spec
 
-. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/f0057efb472253b382b5a9a9150924359c558302.zip[this link].
+. Download the ZIP file containing the OpenAPI Spec from link:https://gist.github.com/evanshortiss/b658a32c4145e59525f90bbbec68db4a/archive/9c99312a5746c75d7988ebc0a1d8d6a94e721c5c.zip[this link].
 . Unzip the file and open the resulting folder. It should contain a JSON file that holds that OpenAPI Spec data.
 . Open the link:{apicurio-url}[Red Hat API Designer Dashboard, window="_blank"] and click the *OpenAPI* button.
 . When prompted to choose a file select the JSON file you just unzipped.
@@ -275,8 +276,12 @@ Verify that you followed each step in the procedure above.  If you are still hav
 
 . When prompted to *Choose an Action*, select *Subscribe*.
 
-. When prompted to select a *Topic Name*, select *{streams-junction-topic-name}*.
-
+. When prompted for a *Topic Name*, enter:
++
+[subs="attributes+"]
+----
+{streams-junction-topic-name}
+----
 . When prompted to *Specify Output Data Type*:
 .. Select *JSON Schema* as the type.
 .. Enter the following in the *Definition* field:
@@ -438,6 +443,7 @@ NOTE: You can pin the project to the top of the Project select list for easier f
 . On the *Deploy Image* screen enter the following:
 .. For *Image Name* enter `quay.io/evanshortiss/summit-2020-rhmi-lab-nodejs-backend` and click the search icon to display the container image details.
 .. Leave the *Name* and *Application Name* fields at their default values.
+.. Select *DeploymentConfig* under the *Resources* section.
 .. Leave the *Create a route to the application* box checked under the *Advanced Options* section.
 . Finally, click *Create* to deploy the container image.
 
@@ -550,11 +556,7 @@ Here's a quick overview of these terms:
 
 === API Management Login
 
-. Open the link:{api-management-url}[3scale Login screen, window="_blank"] and click the *Red Hat Single Sign On* option. This triggers an OAuth Flow and redirects you back to the {3Scale-ProductName} Dashboard, or will request you to login using the same flow as you've become accustomed to.
-. Upon successful login enter your account details as:
-.. *Username*: `{user-username}`
-.. *Email*: `{user-username}@example.com`
-.. Enter your *First name* and *Last name* as desired
+. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and log in with your username and password. 
 . The main Dashboard should be displayed.
 
 {blank}
@@ -648,7 +650,7 @@ In this section you'll see how the resources created in previous sections are ut
 . Select *Integration > Settings*:
 .. In the *Staging Public Base URL* field enter `{3scale-staging-api-host}`.
 .. Scroll down and click the *Update Product* button.
-. Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration* :
+. Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration*.
 . In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
 . Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
 . The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
@@ -754,20 +756,7 @@ Is the *Traffic Heatmap* page displayed? It should be showing a map with cluster
 [type=verificationFail]
 Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
 
-=== Using the Application
-
-Now it's time to see everything come together.
-
-. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
-. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
-. To view the application UI, select *Networking > Routes* and click the URL in the *Location* column for the *{is-name}* item.
-. Take a look at the *Traffic Map* and *Parking Map* pages to see live traffic and parking meter status information displayed on a map.
-
-[type=verification]
-Is the *Traffic Heatmap* page displayed? It should be showing a map with clusters showing traffic hot spots.
-
-[type=verificationFail]
-Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
+{empty} +
 
 Congratulations, in this lab you've:
 

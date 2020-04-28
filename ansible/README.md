@@ -18,7 +18,9 @@ You also need:
 
 ## Deployment Instructions
 
-Run the command below in this folder to deploy the lab for 75 users. By default
+Modify the `redhat-rhmi-smtp` secret in the `redhat-rhmi-operator` namespace to use non-dummy smtp credentials. This is required for 3scale tenants to be setup correctly. 
+
+Next, run the command below in this folder to deploy the lab for 75 users. By default
 75 users will be deployed if `lab_user_count` is not specified.
 
 ```bash
@@ -28,6 +30,15 @@ ansible-playbook playbooks/install.yml \
 # menu in the top right corner
 -e oc_login_token=<CLUSTER_API_TOKEN> \
 -e oc_login_server=<CLUSTER_API_URL> \
+-e lab_user_count=75
+```
+
+If you are already targeting the OpenShift cluster with `oc`, you can run:
+
+```bash
+ansible-playbook playbooks/install.yml \
+-e oc_login_token=$(oc whoami -t) \
+-e oc_login_server=$(oc get infrastructure cluster -o jsonpath='{.status.apiServerURL}') \
 -e lab_user_count=75
 ```
 
