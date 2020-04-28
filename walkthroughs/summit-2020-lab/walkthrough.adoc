@@ -753,20 +753,7 @@ Is the *Traffic Heatmap* page displayed? It should be showing a map with cluster
 [type=verificationFail]
 Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
 
-=== Using the Application
-
-Now it's time to see everything come together.
-
-. Login to the link:{openshift-console-url}[OpenShift Console, window="_blank"].
-. Select *Home > Projects* from the side menu and select *{walkthrough-namespace}* from the list. This will display the *Project Details* screen.
-. To view the application UI, select *Networking > Routes* and click the URL in the *Location* column for the *{is-name}* item.
-. Take a look at the *Traffic Map* and *Parking Map* pages to see live traffic and parking meter status information displayed on a map.
-
-[type=verification]
-Is the *Traffic Heatmap* page displayed? It should be showing a map with clusters showing traffic hot spots.
-
-[type=verificationFail]
-Verify that the *{is-name}* application *Pod* is in a *Running* state. If the map loads but no heatmap is overlaid then verify that the *{dc-name}* application *Pod* is in a *Running* state. Ask your lab administrator for assistance if necessary.
+{empty} +
 
 Congratulations, in this lab you've:
 
