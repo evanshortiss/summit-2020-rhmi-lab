@@ -391,7 +391,7 @@ INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
 ... meterId => meter_id
 ... timestamp => timestamp
 ... status => status_text
-.. Enter *{streams-meter-data-integration}* as the Integration name then click *Save and Publish*.
+.. Enter `{streams-meter-data-integration}` as the Integration name then click *Save and Publish*.
 
 [type=verification]
 Is the integration displayed as *Integrations* screen of the link:{fuse-evals-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
