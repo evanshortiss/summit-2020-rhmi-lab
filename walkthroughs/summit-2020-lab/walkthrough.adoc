@@ -631,7 +631,7 @@ http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.l
 ----
 {blank}
 +
-NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it. You can see that it's name is derived from the *Service* created under *Networking > Services* in your project and the name of the *Project* itself. It also uses port 8080 since this is the port the container exposes the API on.
+NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Cluster can access it. You can see that it's name is derived from the *Service* created under *Networking > Services* in your project and the name of the *Project* itself. It also uses port 8080 since this is the port the container exposes the API on.
 . Click *Create Backend*.
 . Verify that *Backend: {3scale-backend-name}* is selected in the top navigation menu of {3Scale-ProductName}.
 . Select *Mapping Rules* from the side navigation.
@@ -653,7 +653,7 @@ In this section you'll see how the resources created in previous sections are ut
 . Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration*.
 . In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
 . Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
-. The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
+. The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details. Under *Example curl for testing* you will find the *user_key* which is needed in the next step.
 . Use the *Example curl for testing* to retrieve available meters via cURL or your preferred HTTP client, e.g:
 +
 [subs="attributes+"]
@@ -706,7 +706,7 @@ The frontend code is stored in a Git repository. In this section you'll create a
 . An *Import from Git* wizard is displayed. Enter the following in *Git Repo URL*: `https://github.com/evanshortiss/rhmi-enablement-2020-lab`.
 . Expand the *Advanced Git Options* section and enter `/solutions/traffic-application-frontend` in the *Context Dir*.
 . The *Node.js* option under *Builder Image* should been selected automatically, but if it's not select it now.
-. Select verion 10 under the *Builder Image Version* dropdown.
+. Select version 10 under the *Builder Image Version* dropdown.
 . In the *General* section:
 .. Click the *Application* dropdown and select `Create Application`.
 .. Enter `{is-name}-app` for *Application Name* and `{is-name}` for *Name*.
