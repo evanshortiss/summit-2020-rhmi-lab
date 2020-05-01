@@ -62,7 +62,7 @@ To get you started, you will be provided with the following infrastructure:
 * An AMQ Streams instance with 2 topics - {streams-junction-topic-name} and {streams-meter-topic-name}. These topics will be connected to a live stream of IoT data which needs to be ingested
 * A Postgres server with two databases:
 - A pre-populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
-- An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
+- An empty database, with predefined schemas for storing the live IoT traffic and sensor data
 * Access to the Red Hat API Designer tool for exploring the OpenAPI Spec compatible API definition
 * Implementation of the API Server Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
 * Access to 3scale API Management service for protecting your API
@@ -325,11 +325,11 @@ VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 . When prompted to *Add to Integration*, click on the blue *+* icon between the *Subscribe* step and the *Invoke SQL* step.
 
 . Select *Data Mapper* to map the source fields in the AMQ Streams JSON schema to the placeholder parameters in the SQL Statement:
-.. Click and drag *junctionid* from the Source coulmn to *junction_id* in the *Target* column.
-.. Click and drag *timestamp* from the Source coulmn to *timestamp* in the *Target* column.
+.. Click and drag *junctionid* from the Source column to *junction_id* in the *Target* column.
+.. Click and drag *timestamp* from the Source column to *timestamp* in the *Target* column.
 .. Expand the *counts* object to expose the two child objects - *ew* and *ns*.
-.. Click and drag *ew* from the Source coulmn to *count_ew* in the *Target* column.
-.. Click and drag *ns* from the Source coulmn to *count_ns* in the *Target* column.
+.. Click and drag *ew* from the Source column to *count_ew* in the *Target* column.
+.. Click and drag *ns* from the Source column to *count_ns* in the *Target* column.
 .. Click *Done* to navigate back to the *Integration* screen.
 
 . Click *Publish*.
@@ -391,7 +391,7 @@ INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
 ... meterId => meter_id
 ... timestamp => timestamp
 ... status => status_text
-.. Enter *{streams-meter-data-integration}* as the Integration name then click *Save and Publish*.
+.. Enter `{streams-meter-data-integration}` as the Integration name then click *Save and Publish*.
 
 [type=verification]
 Is the integration displayed as *Integrations* screen of the link:{fuse-evals-url}/integrations[Red Hat Fuse Online, window="_blank"] console?
@@ -631,7 +631,7 @@ http://summit-2020-rhmi-lab-nodejs-backend.{walkthrough-namespace}.svc.cluster.l
 ----
 {blank}
 +
-NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Clutser can access it. You can see that it's name is derived from the *Service* created under *Networking > Services* in your project and the name of the *Project* itself. It also uses port 8080 since this is the port the container exposes the API on.
+NOTE: This is a private URL that is not accessible on public networks. Only other services running on the OpenShift Cluster can access it. You can see that it's name is derived from the *Service* created under *Networking > Services* in your project and the name of the *Project* itself. It also uses port 8080 since this is the port the container exposes the API on.
 . Click *Create Backend*.
 . Verify that *Backend: {3scale-backend-name}* is selected in the top navigation menu of {3Scale-ProductName}.
 . Select *Mapping Rules* from the side navigation.
@@ -653,7 +653,7 @@ In this section you'll see how the resources created in previous sections are ut
 . Select *Integration > Configuration* from the side menu and click *add a Backend and promote this configuration*.
 . In the *Add Backend* screen select your *{3scale-backend-name}* in the *Backend* field and click *Add to Product*.
 . Return to the *Integration > Configuration* section and click *Promote v. 1 to Staging* button.
-. The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details.
+. The *Environments* section in *Integration > Configuration* should now contain the *Staging Environment* details. Under *Example curl for testing* you will find the *user_key* which is needed in the next step.
 . Use the *Example curl for testing* to retrieve available meters via cURL or your preferred HTTP client, e.g:
 +
 [subs="attributes+"]
@@ -706,7 +706,7 @@ The frontend code is stored in a Git repository. In this section you'll create a
 . An *Import from Git* wizard is displayed. Enter the following in *Git Repo URL*: `https://github.com/evanshortiss/rhmi-enablement-2020-lab`.
 . Expand the *Advanced Git Options* section and enter `/solutions/traffic-application-frontend` in the *Context Dir*.
 . The *Node.js* option under *Builder Image* should been selected automatically, but if it's not select it now.
-. Select verion 10 under the *Builder Image Version* dropdown.
+. Select version 10 under the *Builder Image Version* dropdown.
 . In the *General* section:
 .. Click the *Application* dropdown and select `Create Application`.
 .. Enter `{is-name}-app` for *Application Name* and `{is-name}` for *Name*.
@@ -761,7 +761,7 @@ Verify that the *{is-name}* application *Pod* is in a *Running* state. If the ma
 Congratulations, in this lab you've:
 
 . Created Connections and an Integration in Red Hat Fuse Online to consume IoT data from AMQ Streams (Kafka).
-. Become familiar with Red Hat API Designer and used it to explore the API definition for this lab's backend.
+. Become familiar with Red Hat API Designer and use it to explore the API definition for this lab's backend.
 . Deployed a container image and integrated it with a Postgres database using OpenShift APIs.
 . Created a Product, Backend, Application, and Application Plan in {3Scale-ProductName} then promoted your API to a Staging Environment for .
 . Created an OpenShift ImageStream, Build Config, Deployment, Service, and Route to make the frontend application available.
