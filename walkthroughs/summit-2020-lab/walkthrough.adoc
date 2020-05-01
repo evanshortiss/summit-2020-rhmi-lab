@@ -62,7 +62,7 @@ To get you started, you will be provided with the following infrastructure:
 * An AMQ Streams instance with 2 topics - {streams-junction-topic-name} and {streams-meter-topic-name}. These topics will be connected to a live stream of IoT data which needs to be ingested
 * A Postgres server with two databases:
 - A pre-populated Lookup database containing reference data which maps incoming Ids for traffic junctions and parking meters to their corresponding names and geo locations
-- An empty database, with pre defined schemas for storing the live IoT traffic and sensor data
+- An empty database, with predefined schemas for storing the live IoT traffic and sensor data
 * Access to the Red Hat API Designer tool for exploring the OpenAPI Spec compatible API definition
 * Implementation of the API Server Node.js which will have the API definition implemented and connectivity to Postgres pre-configured
 * Access to 3scale API Management service for protecting your API
@@ -325,11 +325,11 @@ VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 . When prompted to *Add to Integration*, click on the blue *+* icon between the *Subscribe* step and the *Invoke SQL* step.
 
 . Select *Data Mapper* to map the source fields in the AMQ Streams JSON schema to the placeholder parameters in the SQL Statement:
-.. Click and drag *junctionid* from the Source coulmn to *junction_id* in the *Target* column.
-.. Click and drag *timestamp* from the Source coulmn to *timestamp* in the *Target* column.
+.. Click and drag *junctionid* from the Source column to *junction_id* in the *Target* column.
+.. Click and drag *timestamp* from the Source column to *timestamp* in the *Target* column.
 .. Expand the *counts* object to expose the two child objects - *ew* and *ns*.
-.. Click and drag *ew* from the Source coulmn to *count_ew* in the *Target* column.
-.. Click and drag *ns* from the Source coulmn to *count_ns* in the *Target* column.
+.. Click and drag *ew* from the Source column to *count_ew* in the *Target* column.
+.. Click and drag *ns* from the Source column to *count_ns* in the *Target* column.
 .. Click *Done* to navigate back to the *Integration* screen.
 
 . Click *Publish*.
@@ -761,7 +761,7 @@ Verify that the *{is-name}* application *Pod* is in a *Running* state. If the ma
 Congratulations, in this lab you've:
 
 . Created Connections and an Integration in Red Hat Fuse Online to consume IoT data from AMQ Streams (Kafka).
-. Become familiar with Red Hat API Designer and used it to explore the API definition for this lab's backend.
+. Become familiar with Red Hat API Designer and use it to explore the API definition for this lab's backend.
 . Deployed a container image and integrated it with a Postgres database using OpenShift APIs.
 . Created a Product, Backend, Application, and Application Plan in {3Scale-ProductName} then promoted your API to a Staging Environment for .
 . Created an OpenShift ImageStream, Build Config, Deployment, Service, and Route to make the frontend application available.
