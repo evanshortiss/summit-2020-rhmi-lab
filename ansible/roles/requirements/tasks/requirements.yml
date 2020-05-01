@@ -1,4 +1,5 @@
 ---
+
 - name: Verify oc_login_token is set
   fail:
     msg: oc_login_token variable was not set
@@ -8,6 +9,11 @@
   fail:
     msg: oc_login_server variable was not set
   when: oc_login_server is not defined
+
+- name: Verify repo_root is set
+  fail:
+    msg: repo_root variable was not set
+  when: repo_root is not defined
 
 - name: Login using oc_login_token
   shell: oc login --token={{oc_login_token}} --server={{oc_login_server}}

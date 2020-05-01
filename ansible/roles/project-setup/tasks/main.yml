@@ -45,12 +45,3 @@
 
 - name: Update POSTGRESQL_MAX_CONNECTIONS count
   shell: oc set env dc/postgresql POSTGRESQL_MAX_CONNECTIONS=500 -n {{project_name}}
-
-- name: Provide evals lab users with view access to project Pods
-  shell: oc create -f {{role_path}}/files/port-forward-role.yml -n {{project_name}}
-
-- name: Intialise evals user accounts
-  shell: oc adm policy add-cluster-role-to-user allow-port-forward {{ lab_users_name_format|format(item|int) }} -n {{project_name}}
-  retries: 25
-  delay: 10
-  with_sequence: count={{ lab_user_count }}

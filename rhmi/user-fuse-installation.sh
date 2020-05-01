@@ -16,7 +16,7 @@ create_fuse_resources() {
   # Create and switch to user fuse project
   oc create namespace $NAMESPACE
   oc label namespace $NAMESPACE integreatly=true user-fuse-online=true
-  
+
   # Create fuse pull secret
   oc get secret syndesis-pull-secret -n $FUSE_NAMESPACE -o yaml | sed '/namespace:/d' | oc create -n $NAMESPACE -f -
 

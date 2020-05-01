@@ -18,6 +18,4 @@ for i in $(oc get operatorgroups --all-namespaces  | grep -v NAMESPACE | grep $D
 done
 
 # Remove namespaces
-for i in $(oc get projects -l user-fuse-online=true | grep -v NAME | awk '{print $1}'); do
-    oc delete namespace $i
-done
+oc delete namespace $(oc get projects -l user-fuse-online=true | grep -v NAME | awk '{print $1}' | xargs)

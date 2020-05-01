@@ -1,33 +1,15 @@
 ---
-- name: Delete lab htpasswd secret
-  shell: oc delete secret/rhmi-lab-htpass-secret -n openshift-config --ignore-not-found=true
-  ignore_errors: True
-
 - name: Delete lab project
   shell: oc delete project city-of-losangeles --ignore-not-found=true
   ignore_errors: True
 
-- name: Get lab htpasswd index from OAuth config
-  shell: oc get oauth -n openshift-config -o json | jq '.items[0].spec.identityProviders | map(.name =="rhmi-lab-htpasswd") | index(true)'
-  register: idp_idx
+- name: Delete Fuse Online instances
+  shell: sh {{repo_root}}/rhmi/user-fuse-cleanup.sh
 
-- name: Remove lab htpasswd from OAuth config
-  shell: oc patch oauth/cluster --type json -n openshift-config -p '[{"op":"remove","path":"/spec/identityProviders/{{idp_idx.stdout}}"}]'
-  when: '"null" not in idp_idx.stdout'
+- name: Delete evals lab user SSO CRs
+  shell: oc delete keycloakuser $(oc get keycloakuser -n {{sso_namespace}} | awk '/evals/ {print $1}' | xargs) -n {{sso_namespace}} --ignore-not-found=true
+  ignore_errors: yes
 
-- name: Remove port forward role
-  shell: oc delete clusterrole/allow-port-forward --ignore-not-found=true
-
-- name: Delete lab admin user
-  shell: oc delete users/{{ admin_eval_username }} --ignore-not-found=true
-
-- name: Delete lab admin user from identity
-  shell: oc delete identity rhmi-lab-htpasswd:{{admin_eval_username}}  --ignore-not-found=true
-
-- name: Delete evals lab users
-  shell: oc delete users/{{ lab_users_name_format|format(item|int) }} --ignore-not-found=true
-  with_sequence: count={{ lab_user_count }}
-
-- name: Delete evals lab users from identity
-  shell: oc delete identity rhmi-lab-htpasswd:{{ lab_users_name_format|format(item|int) }} --ignore-not-found=true
-  with_sequence: count={{ lab_user_count }}
+- name: Delete evals lab users from OpenShift
+  shell: oc delete user $(oc get users | awk '/evals/ {print $1}' | xargs) --ignore-not-found=true
+  ignore_errors: yes

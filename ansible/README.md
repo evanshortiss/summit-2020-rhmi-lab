@@ -30,7 +30,9 @@ ansible-playbook playbooks/install.yml \
 # menu in the top right corner
 -e oc_login_token=<CLUSTER_API_TOKEN> \
 -e oc_login_server=<CLUSTER_API_URL> \
--e lab_user_count=75
+-e lab_user_count=75 \
+-e lab_user_password=securepass \
+-e repo_root="$(pwd)/.."
 ```
 
 If you are already targeting the OpenShift cluster with `oc`, you can run:
@@ -39,10 +41,12 @@ If you are already targeting the OpenShift cluster with `oc`, you can run:
 ansible-playbook playbooks/install.yml \
 -e oc_login_token=$(oc whoami -t) \
 -e oc_login_server=$(oc get infrastructure cluster -o jsonpath='{.status.apiServerURL}') \
--e lab_user_count=75
+-e lab_user_count=60 \
+-e lab_user_password=securepass \
+-e repo_root="$(pwd)/.."
 ```
 
-Once this has completed you can login as `evals01` thru `evals75` using the
+Once this has completed you can login as `evals01` thru `evals60` using the
 password `$USERNAME-password` where `$USERNAME` is `evals01` or similar, e.g
 `evals01-password`.
 
@@ -54,7 +58,9 @@ Same as deployment, but use the `uninstall.yml` playbook.
 ansible-playbook playbooks/uninstall.yml \
 -e oc_login_token=<CLUSTER_API_TOKEN> \
 -e oc_login_server=<CLUSTER_API_URL> \
--e lab_user_count=75
+-e action=uninstall \
+-e lab_user_count=60 \
+-e repo_root="$(pwd)/.."
 ```
 
 ## Verify the Deployment
