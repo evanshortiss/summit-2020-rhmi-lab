@@ -6,7 +6,7 @@
       "email": "evan.shortiss@redhat.com"
     }
   ],
-  "tags": ["amq", "s2i", "streams" "react", "nodejs", "3scale"],
+  "tags": ["amq", "s2i", "streams", "react", "nodejs", "3scale"],
   "rhmiVersions": ["1.6"],
   "hasPreRequisites": true
 }
