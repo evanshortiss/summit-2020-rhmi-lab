@@ -3,13 +3,14 @@
   shell: oc delete project city-of-losangeles --ignore-not-found=true
   ignore_errors: True
 
-- name: Delete Fuse Online instances
-  shell: sh {{repo_root}}/rhmi/user-fuse-cleanup.sh
-
 - name: Delete evals lab user SSO CRs
   shell: oc delete keycloakuser $(oc get keycloakuser -n {{sso_namespace}} | awk '/evals/ {print $1}' | xargs) -n {{sso_namespace}} --ignore-not-found=true
   ignore_errors: yes
 
 - name: Delete evals lab users from OpenShift
   shell: oc delete user $(oc get users | awk '/evals/ {print $1}' | xargs) --ignore-not-found=true
+  ignore_errors: yes
+
+- name: Delete Fuse Online instances
+  shell: sh {{repo_root}}/rhmi/user-fuse-cleanup.sh
   ignore_errors: yes

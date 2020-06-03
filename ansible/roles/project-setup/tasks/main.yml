@@ -4,6 +4,15 @@
   register: _action_create_project
   failed_when: _action_create_project.rc != 0 and 'AlreadyExists' not in _action_create_project.stderr
 
+- name: Create OperatorGroup
+  shell: oc apply -f {{role_path}}/files/operator.group.yml -n {{project_name}}
+
+- name: Create operator Subscription
+  shell: oc apply -f {{role_path}}/files/operator.subscription.yml -n {{project_name}}
+
+- name: Wait for a bit operator to be available
+  shell: sleep 30
+
 - name: Create AMQ Streams cluster
   shell: oc apply -f {{role_path}}/files/kafka.cluster.yml -n {{project_name}}
 

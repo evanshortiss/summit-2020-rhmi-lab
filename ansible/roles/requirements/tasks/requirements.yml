@@ -18,15 +18,6 @@
 - name: Login using oc_login_token
   shell: oc login --token={{oc_login_token}} --server={{oc_login_server}}
 
-- name: Get identity via oc whoami
-  shell: oc whoami
-  register: oc_identity
-
-- name: Verify identity is kube:admin
-  fail:
-    msg: "oc_login_token should be a token for kube:admin"
-  when: oc_identity.stdout!="kube:admin"
-
 - name: Verify jq CLI install location
   shell: which jq
   register: jq_location

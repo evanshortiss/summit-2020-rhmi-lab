@@ -1,9 +1,9 @@
 ---
 - import_playbook: ./requirements.yml
-- import_playbook: ./create-users.yml
+# Only required if the cluster doesn't already have an SSO IdP
+# - import_playbook: ./create-users.yml
 - import_playbook: ./project-setup.yml
 - import_playbook: ./create-tenants.yml
-- import_playbook: ./fuse-setup.yml
 
 - hosts: localhost
   gather_facts: no
