@@ -38,12 +38,6 @@ create_fuse_resources() {
 
   # Create subscription
   oc process -p USERNAME=$USERNAME USER_FUSE_NAMESPACE=$NAMESPACE -f "${BASH_SOURCE%/*}/templates/fuse-subscription.yaml" | oc create -f -
-
-  # Create operator group
-  oc process -p USER_FUSE_NAMESPACE=$NAMESPACE -f "${BASH_SOURCE%/*}/templates/fuse-operator-group.yaml" | oc create -f -
-
-  # Create subscription
-  oc process -p USERNAME=$USERNAME USER_FUSE_NAMESPACE=$NAMESPACE -f "${BASH_SOURCE%/*}/templates/fuse-subscription.yaml" | oc create -f -
   sleep 20
 
   # Ensure install plan exists before proceeding
@@ -55,9 +49,11 @@ create_fuse_resources() {
   # Approve install plan
   oc patch installplan $(oc get installplans -n $NAMESPACE | grep -v NAME | awk '{print $1}') -n $NAMESPACE --type='json' -p '[{"op": "replace", "path": "/spec/approved", "value": true}]'
 
+  # Get 3Scale management URL
+  THREESCALE_MGMT_URL=$(oc get syndesis integreatly -n redhat-rhmi-fuse -o yaml | grep managementUrlFor3scale | awk '{print $2}')
+
   # Create the Syndesis CR
-  # remove namespace, annotations, replace name to the dev username, ensures monitoring is disabled by setting ops to false
-  oc get syndesis integreatly -n redhat-rhmi-fuse -o yaml | sed "/namespace: redhat-rhmi-fuse/d;/annotations/,/applicationUrl/d;s/name: integreatly/name: $USERNAME/g;/status:/,/version:/d;/ops/,/todo/{s/enabled: \"true\"/enabled: \"false\"/g}" | oc create -n $NAMESPACE -f -
+  oc process -p FUSE_CR_NAME=$USERNAME USER_FUSE_NAMESPACE=$NAMESPACE THREESCALE_MANAGEMENT_URL=$THREESCALE_MGMT_URL -f "${BASH_SOURCE%/*}/templates/fuse.yaml" | oc create -f -
 }
 
 for ((i = 1; i <= NUM_USERS; i++)); do
