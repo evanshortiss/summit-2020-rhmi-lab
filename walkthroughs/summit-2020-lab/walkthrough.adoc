@@ -705,8 +705,6 @@ The Traffic Junctions page will:
 
 {empty} +
 
-+NOTE: Ask your lab administrator for a Google Maps API Key at this point, or get one of your own via the [Google Cloud Platform](https://console.cloud.google.com/google/maps-apis/overview).
-
 === Create a Build from Git
 
 The frontend code is stored in a Git repository. In this section you'll create a s2i (source-to-image) *Build* that will turn that code into a container image. It will also create the necessary OpenShift API Objects such as *Image Streams*, a *Build Config* and *DeploymentConfig* for you.
@@ -729,6 +727,8 @@ The frontend code is stored in a Git repository. In this section you'll create a
 .. `API_URL` with the value of your 3scale Staging API URL.
 .. `API_KEY` with the value of your 3scale Staging API Key.
 .. `MAPS_API_KEY` with a value provided by the lab administrator, or your own Google Maps API Key.
++
+NOTE: Ask your lab administrator for a Google Maps API Key at this point, or get one of your own via the [Google Cloud Platform](https://console.cloud.google.com/google/maps-apis/overview).
 . Click the *Routing* link:
 .. Leave *Hostname* and *Path* at the default values.
 .. Set *Target Port*  `8080`.
