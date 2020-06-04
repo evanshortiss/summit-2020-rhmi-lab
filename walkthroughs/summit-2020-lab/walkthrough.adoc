@@ -235,6 +235,8 @@ NOTE: There is an existing Postgres connection included for example purposes. Yo
 ----
 {postgres-username}
 ----
++
+NOTE: If your username contains a hyphen, replace it with an underscore when using it to connect to the database, e.g instead of `test-user` use `test_user`.
 
 . Enter the password:
 +
@@ -242,8 +244,6 @@ NOTE: There is an existing Postgres connection included for example purposes. Yo
 ----
 {postgres-password}
 ----
-+
-NOTE: If your username contains a hyphen, replace it with an underscore when using it to connect to the database, e.g instead of `test-user` use `test_user`.
 
 . Leave the Schema field blank for now.
 
