@@ -469,6 +469,8 @@ Secrets can be used to store sensitive information securely such that it's not v
 . Choose *Workloads > Secrets* on the left and click the *Create > Key/Value Secret* button on the *Secrets* screen.
 . Enter `pg-secrets` in the *Secret Name* field.
 . Create a key named `username` with a value of `{postgres-username}` in the text box below the *Browse* option.
++
+NOTE: Remember to replace hyphens in your username with underscores if necessary!
 . Click *Add Key/Value* to create another key/value pair.
 . Enter the key name of `password` with a value of `{postgres-password}`.
 . Click *Create*.
