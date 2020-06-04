@@ -321,6 +321,8 @@ Verify that you followed each step in the procedure above.  If you are still hav
 INSERT INTO {postgres-junction-status-table} (junction_id, timestamp, count_ns, count_ew)
 VALUES (:#junction_id, to_timestamp(:#timestamp), :#count_ns, :#count_ew);
 ----
++
+NOTE: If your username contains a hyphen, you need to ensure the table in the query above uses an underscore. For example, change `INSERT INTO junction_status_test-user` to `INSERT INTO junction_status_test_user`.
 .. Leave the *Batch update* and *Raise error when record not found* boxes unchecked.
 .. Click *Next*.
 
@@ -389,6 +391,8 @@ Is the integration displayed as *Building*, *Deploying*, or *Running* on the *In
 INSERT INTO {postgres-meter-status-table} (meter_id, status_text, timestamp)
  VALUES (:#meter_id, :#status_text, to_timestamp(:#timestamp));
 ----
++
+NOTE: If your username contains a hyphen, you need to ensure the table in the query above uses an underscore. For example, change `INSERT INTO junction_status_test-user` to `INSERT INTO junction_status_test_user`.
 .. When adding the *Data Mapper* map the 3 fields as follows:
 ... meterId => meter_id
 ... timestamp => timestamp
