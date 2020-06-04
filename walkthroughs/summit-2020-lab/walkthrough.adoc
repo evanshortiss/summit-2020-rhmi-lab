@@ -242,6 +242,8 @@ NOTE: There is an existing Postgres connection included for example purposes. Yo
 ----
 {postgres-password}
 ----
++
+NOTE: If your username contains a hyphen, replace it with an underscore when using it to connect to the database, e.g instead of `test-user` use `test_user`.
 
 . Leave the Schema field blank for now.
 
@@ -425,6 +427,9 @@ When deploying API server implementation, you will need to use the following det
 . Database: `{postgres-database}`
 . Port: `{postgres-port}`
 
++
+NOTE: If your username contains a hyphen, replace it with an underscore when using it to connect to the database.
+
 {blank}
 
 The *username* and *password* information will be provided to your API server via a *Secret* that you will create in the OpenShift UI.
@@ -556,7 +561,7 @@ Here's a quick overview of these terms:
 
 === API Management Login
 
-. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and log in with your username and password. 
+. Open the link:{3scale-management-url}[3scale Login screen, window="_blank"] and log in with your username and password.
 . The main Dashboard should be displayed.
 
 {blank}
