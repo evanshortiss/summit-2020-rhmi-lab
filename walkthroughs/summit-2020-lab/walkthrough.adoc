@@ -705,8 +705,7 @@ The Traffic Junctions page will:
 
 {empty} +
 
-+
-NOTE: Ask your lab administrator for a Google Maps API Key at this point, or get one of your own via the [Google Cloud Platform](https://console.cloud.google.com/google/maps-apis/overview).
++NOTE: Ask your lab administrator for a Google Maps API Key at this point, or get one of your own via the [Google Cloud Platform](https://console.cloud.google.com/google/maps-apis/overview).
 
 === Create a Build from Git
 
