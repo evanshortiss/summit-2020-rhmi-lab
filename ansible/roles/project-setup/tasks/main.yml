@@ -4,6 +4,9 @@
   register: _action_create_project
   failed_when: _action_create_project.rc != 0 and 'AlreadyExists' not in _action_create_project.stderr
 
+- meta: end_play
+  when: '"AlreadyExists" in _action_create_project.stderr'
+
 - name: Create OperatorGroup
   shell: oc apply -f {{role_path}}/files/operator.group.yml -n {{project_name}}
 

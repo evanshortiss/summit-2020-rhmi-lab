@@ -13,7 +13,7 @@ tenant_admin_email: admin@example.com
 tenant_admin_password: Password1
 tenant_detail_secret_name: "{{ tenant_name }}"
 tenant_detail_secret_namespace: "{{ namespace }}"
-tenant_id_format: test-user%02d
+tenant_id_format: evals%02d
 
 # template references
 template_credential_secret: tenant-secret.json.j2
