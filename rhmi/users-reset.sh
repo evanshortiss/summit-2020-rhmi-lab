@@ -18,8 +18,9 @@ format_user_name() {
 # Delete existing testing-idp users
 oc delete keycloakuser $(oc get keycloakuser -n $NAMESPACE | awk '/evals/ {print $1}' | xargs) -n $NAMESPACE
 oc delete user $(oc get users | awk '/evals/ {print $1}' | xargs)
+sleep 5
 
 for ((i = 1; i <= NUM_REGULAR_USER; i++)); do
   format_user_name $i "$REGULAR_USERNAME"
-  oc process -p NAMESPACE="$NAMESPACE" -p REALM="$REALM" -p PASSWORD="$PASSWORD" -p USERNAME="$USERNAME" -p FIRSTNAME="Test" -p LASTNAME="User ${USER_NUM}" -f "$PWD/templates/user.yaml" | oc apply -f -
+  oc process -p NAMESPACE="$NAMESPACE" -p REALM="$REALM" -p PASSWORD="$PASSWORD" -p USERNAME="$USERNAME" -p FIRSTNAME="Test" -p LASTNAME="User ${USER_NUM}" -f "$PWD/user-template.yml" | oc apply -f -
 done
