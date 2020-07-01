@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "husky": "~3.0.5",
-    "nodeshift": "~3.1.1",
+    "nodeshift": "^6.2.0",
     "standard": "~14.1.0"
   }
 }
