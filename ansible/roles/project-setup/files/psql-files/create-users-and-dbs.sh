@@ -1,6 +1,6 @@
-for NUM in {1..75}
+for NUM in {1..50}
 do
-  USER_USERNAME=$(printf "evals%02d\n" $NUM)
+  USER_USERNAME=$(printf "evals%d\n" $NUM)
   USER_PASSWORD=Password1
   TABLE_JUNCTIONS="junction_status_$USER_USERNAME"
   TABLE_METERS="meter_status_$USER_USERNAME"

@@ -16,12 +16,10 @@ You also need:
 * AMQ Streams Operator installed on the RHMI v2 Cluster
 * Admin (e.g kube:admin) account for the OpenShift v4 Cluster
 
-## Deployment Instructions
+## Deployment Instructions 
 
-Modify the `redhat-rhmi-smtp` secret in the `redhat-rhmi-operator` namespace to use non-dummy smtp credentials. This is required for 3scale tenants to be setup correctly. 
-
-Next, run the command below in this folder to deploy the lab for 75 users. By default
-75 users will be deployed if `lab_user_count` is not specified.
+Next, run the command below in this folder to deploy the lab for 50 users. By default
+50 users will be deployed if `lab_user_count` is not specified.
 
 ```bash
 ansible-playbook playbooks/install.yml \
@@ -30,8 +28,7 @@ ansible-playbook playbooks/install.yml \
 # menu in the top right corner
 -e oc_login_token=<CLUSTER_API_TOKEN> \
 -e oc_login_server=<CLUSTER_API_URL> \
--e lab_user_count=75 \
--e lab_user_password=securepass \
+-e lab_user_count=50 \
 -e repo_root="$(pwd)/.."
 ```
 
@@ -41,14 +38,11 @@ If you are already targeting the OpenShift cluster with `oc`, you can run:
 ansible-playbook playbooks/install.yml \
 -e oc_login_token=$(oc whoami -t) \
 -e oc_login_server=$(oc get infrastructure cluster -o jsonpath='{.status.apiServerURL}') \
--e lab_user_count=60 \
--e lab_user_password=securepass \
+-e lab_user_count=50 \
 -e repo_root="$(pwd)/.."
 ```
 
-Once this has completed you can login as `evals01` thru `evals60` using the
-password `$USERNAME-password` where `$USERNAME` is `evals01` or similar, e.g
-`evals01-password`.
+Once this has completed you can login as `evals1` thru `evals50`.
 
 ## Uninstall Instructions
 
@@ -58,7 +52,6 @@ Same as deployment, but use the `uninstall.yml` playbook.
 ansible-playbook playbooks/uninstall.yml \
 -e oc_login_token=<CLUSTER_API_TOKEN> \
 -e oc_login_server=<CLUSTER_API_URL> \
--e action=uninstall \
 -e lab_user_count=60 \
 -e repo_root="$(pwd)/.."
 ```

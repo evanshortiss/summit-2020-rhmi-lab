@@ -36,12 +36,3 @@
   fail:
     msg: "Unsupported oc version"
   when: oc_major_version.stdout!="4"
-
-- name: Get 3scale SMTP credentials
-  shell: oc get secret redhat-rhmi-smtp -n redhat-rhmi-operator -o jsonpath='{.data.host}'
-  register: threescale_smtp_hostname
-
-- name: Verify 3scale SMTP is not a sample value
-  fail:
-    msg: "3scale SMTP cofig (host, password, port, etc) must be empty, or set to valid values (oc edit secret system-smtp -n redhat-rhmi-3scale). The hostname is currently set to \"{{ threescale_smtp_hostname.stdout | b64decode }}\""
-  when: threescale_smtp_hostname.stdout | b64decode == "smtp.example.com"

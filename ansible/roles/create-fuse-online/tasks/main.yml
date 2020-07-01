@@ -1,4 +1,0 @@
----
-
-- name: Create Fuse Online per lab user (takes a very long time!)
-  shell: "NUM_USERS={{lab_user_count}} sh {{repo_root}}/rhmi/user-fuse-installation.sh"

@@ -1,4 +1,0 @@
----
-
-- name: Verify requirements are installed
-  include_tasks: create-users.yml

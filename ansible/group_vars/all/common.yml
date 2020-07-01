@@ -1,10 +1,5 @@
 ---
-lab_user_count: 60
-lab_sso_realm: rhmi-lab
-lab_user_password: rhmilabpass
+lab_user_count: 50
 lab_users_name_prefix: evals
-lab_users_name_format: evals%02d
-admin_eval_username: lab-admin-evals
-admin_eval_password: labadminpassword
-sso_namespace: redhat-rhmi-rhsso
+lab_users_name_format: evals%d
 project_name: city-of-losangeles

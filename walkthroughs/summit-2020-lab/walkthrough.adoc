@@ -32,7 +32,7 @@
 :3scale-app-name: {3scale-base-name}-app
 :3scale-api-key: {3scale-base-name}-key
 :3scale-staging-api-host: https://{user-username}-traffic-api-staging.{openshift-app-host}:443
-:3scale-management-url: https://{user-username}-admin.{openshift-app-host}
+:3scale-management-url: https://{user-username}-tenant-admin.{openshift-app-host}
 
 :is-name: traffic-frontend
 
