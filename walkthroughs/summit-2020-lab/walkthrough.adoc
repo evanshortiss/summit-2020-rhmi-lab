@@ -125,7 +125,7 @@ When properly defined, a consumer can understand and interact with the remote se
 An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.
 For more information on the *OpenAPI Specification* see the link:{oas3-url}[Open API Specification, window="_blank"] on GitHub
 
-In this section we will use the Red Hat API designer to explore a pre-built an OpenAPI Specification which is used in the implementation of our API Server.
+In this section we will use the Red Hat API designer to explore a pre-built OpenAPI Specification which is used in the implementation of our API Server.
 The APIs created will combine data from the provided Lookup Tables in Postgres - *{postgres-junction-lookup-table}* and *{postgres-meter-lookup-table}* - with the data from the live junction and meter tables which is being ingested from AMQ Streams.
 
 === Viewing an Open API Spec
