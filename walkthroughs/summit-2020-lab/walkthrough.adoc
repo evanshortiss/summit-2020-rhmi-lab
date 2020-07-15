@@ -760,7 +760,7 @@ Now that the *Build* is complete it's time to see everything working together.
 . Select the *Developer* view using the dropdown underneath the Red Hat OpenShift logo.
 . Select the *{walkthrough-namespace}* from the *Project* dropdown to the right of where you chose the developer view.
 . Choose the *Topology* view on from the left-side menu and click the *traffic-frontend* item.
-. In the pane on the right click the URL under the *Routes* section.
+. In the pane on the click the URL under the *Routes* section.
 . Take a look at the *Traffic Map* and *Parking Map* pages to see live traffic and parking meter status information displayed on a map.
 
 [type=verification]
